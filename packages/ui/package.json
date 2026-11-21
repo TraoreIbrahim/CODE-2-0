@@ -1,0 +1,40 @@
+{
+  "name": "@code/ui",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./src/theme.css",
+    "./holo.css": "./src/holo/holo.css",
+    "./samples": "./src/holo/samples.ts",
+    "./lab": "./src/reglages/lab.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --import tsx --test \"src/**/*.test.ts\""
+  },
+  "dependencies": {
+    "@code/protocol": "*",
+    "@fontsource/inter": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "@fontsource/oxanium": "5.3.0",
+    "@ricky0123/vad-web": "0.0.31",
+    "maplibre-gl": "6.13.0",
+    "onnxruntime-web": "1.31.1",
+    "pdfjs-dist": "^6.4.299",
+    "roughjs": "4.6.6",
+    "three": "0.185.1"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/three": "0.185.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}

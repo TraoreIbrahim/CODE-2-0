@@ -1,0 +1,32 @@
+name: Un bug
+description: Quelque chose ne marche pas comme prévu.
+labels: [bug]
+body:
+  - type: textarea
+    id: quoi
+    attributes:
+      label: Ce qui se passe
+      description: Ce que vous avez fait, ce que vous attendiez, et ce qui s'est passé.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduire
+    attributes:
+      label: Pour le reproduire
+      placeholder: "1. …\n2. …"
+  - type: input
+    id: systeme
+    attributes:
+      label: Système et appareil
+      placeholder: macOS 26, app de bureau / iPhone, web app…
+  - type: input
+    id: moteur
+    attributes:
+      label: Moteur utilisé
+      placeholder: Claude, Ollama qwen3:8b…
+  - type: textarea
+    id: journal
+    attributes:
+      label: Journal du serveur
+      description: Les lignes utiles. Retirez-en toute donnée personnelle (noms, adresses, contenu de mails) et toute clé.
+      render: text

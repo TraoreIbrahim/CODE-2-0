@@ -1,0 +1,75 @@
+/* Mémoire et compétences : ce que l'assistant sait de la personne, et les méthodes qu'elle lui a données.
+   Des fiches lisibles, chacune retirable : rien ne s'y écrit en cachette. */
+
+.mem { container: memoire / inline-size; display: flex; flex-direction: column; gap: 18px; }
+.mem h3 { margin: 0; }
+.mem .holo-action { flex: none; width: auto; }
+
+.mem-tete { display: flex; flex-direction: column; gap: 6px; }
+.mem-tete__kicker { font-size: 10.5px; letter-spacing: 0.14em; color: var(--code-faint); }
+.mem-tete__titre { margin: 0; font: 600 clamp(26px, 3.4vw, 38px) / 1.08 var(--code-display); letter-spacing: 0.015em; color: var(--code-text); overflow-wrap: anywhere; }
+
+/* ── Les notes, par rubrique ── */
+.mem-rubriques { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; align-items: start; }
+.mem-rubrique { display: flex; flex-direction: column; gap: 4px; padding: 14px 8px 8px 14px; border: 1px solid var(--code-line); border-radius: 10px; background: rgba(var(--code-cyan-rgb), 0.02); animation: today-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 60ms); }
+.mem-rubrique h3 { display: flex; align-items: center; gap: 9px; padding: 0 6px 8px 0; font: 600 13px var(--code-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--code-text); }
+.mem-rubrique h3 i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(var(--code-cyan-rgb), 0.12); color: var(--code-cyan); }
+.mem-rubrique h3 span { flex: 1; }
+.mem-rubrique h3 small { font-size: 10.5px; letter-spacing: 0.1em; color: var(--code-faint); }
+.mem-rubrique ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.mem-rubrique li { position: relative; display: flex; align-items: flex-start; gap: 6px; padding: 9px 0; border-top: 1px solid var(--code-line-soft, var(--code-line)); }
+.mem-note { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.mem-note > span { font-size: 15px; line-height: 1.42; color: var(--code-text); overflow-wrap: anywhere; }
+.mem-note > small { font-size: 10px; letter-spacing: 0.1em; color: var(--code-faint); }
+.mem-oublier { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border: none; border-radius: 50%; background: transparent; color: var(--code-faint); opacity: 0.45; cursor: pointer; transition: opacity 0.2s ease, color 0.2s ease, background 0.2s ease; }
+.mem-rubrique li:hover .mem-oublier, .mem-oublier:focus-visible { opacity: 1; }
+.mem-oublier:hover { color: var(--code-red-text); background: var(--code-red-bg); }
+.mem-oublier:focus-visible { outline: 2px solid var(--code-cyan); outline-offset: 1px; }
+/* La note qui vient d'être retenue : un trait de lumière, qui s'apaise. */
+.mem-rubrique li.is-focus::before { content: ''; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 2px; border-radius: 2px; background: var(--code-cyan); box-shadow: 0 0 12px var(--code-cyan); animation: mem-neuf 2.4s ease-out 0.4s both; }
+.mem-rubrique li.is-focus .mem-note > span { color: var(--code-cyan); }
+@keyframes mem-neuf { from { opacity: 1; } to { opacity: 0.45; box-shadow: none; } }
+
+/* ── Les mots appris ── */
+.mem-lexique { display: flex; flex-direction: column; gap: 9px; }
+.mem-lexique h3, .comp h3 { font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; color: var(--code-faint); }
+.mem-lexique ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.mem-lexique li { padding: 4px 11px; border: 1px solid var(--code-line); border-radius: 999px; font: 500 13px var(--code-mono); color: var(--code-text-2); }
+.mem-lexique p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--code-faint); }
+
+.mem-vierge { display: flex; flex-direction: column; gap: 8px; padding: 22px 18px; border: 1px dashed var(--code-line); border-radius: 12px; }
+.mem-vierge strong { font: 600 18px var(--code-display); letter-spacing: 0.03em; color: var(--code-text); }
+.mem-vierge p { margin: 0; max-width: 58ch; font-size: 14.5px; line-height: 1.5; color: var(--code-muted); }
+.mem-outils { display: flex; flex-wrap: wrap; gap: 8px 10px; }
+.mem-note-bas { font-size: 12px; line-height: 1.45; color: var(--code-faint); }
+
+/* ── Une compétence ── */
+.comp-suivie { display: inline-flex; align-items: center; gap: 9px; align-self: flex-start; margin: 0; padding: 6px 13px 6px 11px; border: 1px solid rgba(var(--code-cyan-rgb), 0.5); border-radius: 999px; background: rgba(var(--code-cyan-rgb), 0.08); font: 600 11px var(--code-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--code-cyan); }
+.comp-suivie i { width: 7px; height: 7px; border-radius: 50%; background: var(--code-cyan); box-shadow: 0 0 10px var(--code-cyan); animation: comp-pouls 1.8s ease-in-out infinite; }
+@keyframes comp-pouls { 50% { opacity: 0.3; } }
+.comp-quand { display: flex; flex-direction: column; gap: 7px; padding: 12px 14px; border-left: 2px solid var(--code-amber); border-radius: 0 10px 10px 0; background: var(--code-amber-bg); }
+.comp-quand h3 { color: var(--code-amber-text); }
+.comp-quand p { margin: 0; font-size: 15.5px; line-height: 1.45; color: var(--code-text); }
+.comp-methode { display: flex; flex-direction: column; gap: 4px; }
+.comp-methode .holo-read { padding: 0; max-width: 70ch; font-size: 15px; }
+
+/* ── La liste des compétences ── */
+.comp-liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.comp-liste > li { animation: today-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.comp-carte { display: flex; align-items: flex-start; gap: 13px; width: 100%; padding: 13px 14px; border: 1px solid var(--code-line); border-radius: 10px; background: rgba(var(--code-cyan-rgb), 0.025); color: var(--code-text); font: inherit; text-align: left; cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease; }
+.comp-carte:hover { border-color: rgba(var(--code-cyan-rgb), 0.5); background: rgba(var(--code-cyan-rgb), 0.05); }
+.comp-carte:focus-visible { outline: 2px solid var(--code-cyan); outline-offset: 2px; }
+.comp-carte > i { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(var(--code-cyan-rgb), 0.5); color: var(--code-cyan); }
+.comp-carte__texte { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.comp-carte__texte strong { font: 600 16px / 1.25 var(--code-display); letter-spacing: 0.03em; overflow-wrap: anywhere; }
+.comp-carte__texte span { font-size: 13.5px; line-height: 1.45; color: var(--code-text-2); }
+.comp-carte em { flex: none; padding-top: 3px; font-size: 10px; font-style: normal; letter-spacing: 0.12em; color: var(--code-faint); }
+
+@container memoire (max-width: 520px) {
+  .mem-oublier { opacity: 0.8; }
+  .comp-carte em { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mem-rubrique, .comp-liste > li, .mem-rubrique li.is-focus::before, .comp-suivie i { animation: none; }
+}

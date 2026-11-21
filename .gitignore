@@ -1,0 +1,24 @@
+node_modules
+out
+dist
+*.log
+.DS_Store
+
+# Secrets et données : jamais dans git (scripts/verifier-publication.mjs le vérifie aussi)
+.env
+.env.*
+!.env.example
+data/
+*.sqlite
+*.sqlite3
+*.db
+models/
+memory/*.md
+!memory/LISEZMOI.md
+
+# Liste locale des mots interdits avant publication (noms, clients, domaines) : elle les révélerait
+.publication-interdits.txt
+
+# Copiés à l’installation depuis node_modules (scripts/copy-vad-assets.mjs)
+apps/mobile/public/vad/
+apps/desktop/src/renderer/public/vad/

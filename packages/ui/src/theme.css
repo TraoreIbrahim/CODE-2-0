@@ -1,0 +1,525 @@
+/* Thème CODE — repris des maquettes (canvas « CODE — Design »). */
+/* Polices intégrées à l'app (plus Google Fonts) : rien à attendre d'Internet au démarrage. Sur iPhone,
+   l'import distant retardait l'affichage de 3 à 5 s ; il bloquait aussi l'app hors connexion Internet. */
+@import '@fontsource/oxanium/latin-300.css';
+@import '@fontsource/oxanium/latin-500.css';
+@import '@fontsource/oxanium/latin-600.css';
+@import '@fontsource/oxanium/latin-700.css';
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-500.css';
+@import '@fontsource/jetbrains-mono/latin-600.css';
+@import './chat.css';
+@import './login.css';
+@import './demarrage.css';
+@import './reglages/reglages.css';
+@import './simple.css';
+
+:root {
+  --code-bg: #04070b;
+  --code-panel: rgba(8, 18, 25, 0.85);
+  --code-line: #14303c;
+  --code-line-soft: #0f2733;
+  --code-text: #e6f4fa;
+  --code-text-2: #c9dce5;
+  --code-muted: #8fa3b3;
+  --code-faint: #6f8796;
+  /* Couleur principale : celle du thème choisi (Réglages), posée par applyTheme() — ici, le cyan d'origine. */
+  --code-cyan: #46d7ff;
+  --code-cyan-rgb: 70, 215, 255;
+  --code-cyan-soft: rgba(var(--code-cyan-rgb), 0.08);
+  /* Contrepoint du thème : le dernier grain du logo, la réflexion de l'orbe. */
+  --code-contre: #ffb547;
+  --code-contre-rgb: 255, 181, 71;
+  --code-amber: #ffb547;
+  --code-amber-text: #ffd18a;
+  --code-amber-muted: #c9b48f;
+  --code-amber-line: #5a4316;
+  --code-amber-bg: rgba(30, 22, 8, 0.7);
+  --code-green: #3be38a;
+  --code-red-text: #ffb3b3;
+  --code-red-line: #6b2b2b;
+  --code-red-bg: rgba(60, 14, 14, 0.6);
+  --code-grey: #8a9aa6;
+  --code-display: 'Oxanium', system-ui, sans-serif;
+  --code-sans: Inter, system-ui, sans-serif;
+  --code-mono: 'JetBrains Mono', ui-monospace, monospace;
+  color-scheme: dark;
+}
+
+/*
+ * Thème clair (Aube). Les surfaces et encres dessinées pour le noir passent par des variables
+ * qui n'existent qu'ici : en thème sombre, chaque règle garde sa couleur d'origine (la valeur de repli).
+ */
+[data-clair] {
+  --code-ombre: 255, 255, 255;
+  --code-teinte: 214, 232, 242;
+  --code-fond-x: #ffffff;
+  --code-fond-chaud: #fff6e6;
+  --code-filet-x: var(--code-line);
+  --code-encre: var(--code-text-2);
+  --code-encre-ambre: #8a5200;
+  --code-encre-rouge: #b3261e;
+  --code-amber: #b86a00;
+  --code-amber-text: #8a5200;
+  --code-amber-muted: #7a5a1e;
+  --code-amber-line: #e3bd72;
+  --code-amber-bg: rgba(255, 181, 71, 0.16);
+  --code-green: #0f8a4f;
+  --code-red-text: #b3261e;
+  --code-red-line: #eba3a3;
+  --code-red-bg: rgba(255, 107, 94, 0.12);
+  --code-grey: #5d7181;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--code-bg);
+  color: var(--code-text);
+  font-family: var(--code-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--code-cyan);
+  outline-offset: 2px;
+}
+
+.code-grid-bg {
+  background-color: var(--code-bg);
+  background-image:
+    linear-gradient(rgba(var(--code-cyan-rgb), 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--code-cyan-rgb), 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.code-mono {
+  font-family: var(--code-mono);
+}
+
+.code-brand {
+  font-family: var(--code-display);
+  font-weight: 700;
+  letter-spacing: 0.5em;
+  color: var(--code-cyan);
+}
+
+.code-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  line-height: 1;
+}
+.code-mark {
+  flex: none;
+  overflow: visible;
+}
+.code-mark__onde {
+  fill: none;
+  stroke: var(--code-cyan);
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 10px rgba(var(--code-cyan-rgb), 0.6));
+}
+.code-mark__onde--clair {
+  stroke: var(--code-encre, #e9fbff);
+}
+.code-mark__oeil {
+  fill: var(--code-encre, #e9fbff);
+  filter: drop-shadow(0 0 24px rgba(var(--code-cyan-rgb), 0.95));
+  animation: code-mark-cligne 5.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* Un clignement de temps en temps, comme l'orbe en écoute. */
+@keyframes code-mark-cligne {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .code-mark__oeil {
+    animation: none;
+  }
+}
+
+.code-state-label {
+  font-family: var(--code-display);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+}
+
+.tone-cyan {
+  color: var(--code-cyan);
+}
+.tone-ambre {
+  color: var(--code-amber);
+}
+.tone-rouge {
+  color: var(--code-encre-rouge, #ff8a7d);
+}
+.tone-gris {
+  color: var(--code-grey);
+}
+
+.code-tag {
+  display: block;
+  font-family: var(--code-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--code-faint);
+  margin-bottom: 4px;
+}
+.code-tag--code {
+  color: var(--code-cyan);
+}
+
+.code-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--code-filet-x, #16323f);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-family: var(--code-mono);
+  font-size: 11px;
+  color: var(--code-encre, #a9c3d0);
+}
+.code-chip__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--code-green);
+}
+.code-chip__dot--off {
+  background: #ff8a8a;
+}
+
+.code-icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--code-filet-x, #16323f);
+  background: transparent;
+  color: var(--code-encre, #a9c3d0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.code-icon-btn:hover {
+  border-color: var(--code-filet-x, #23495a);
+  color: var(--code-text);
+}
+
+.code-btn {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.code-btn--ambre {
+  border: none;
+  background: var(--code-amber);
+  color: #1a1204;
+  font-weight: 600;
+}
+.code-btn--ambre-ghost {
+  border: 1px solid var(--code-amber-line);
+  background: transparent;
+  color: var(--code-amber-text);
+}
+.code-btn--ghost {
+  border: 1px solid var(--code-filet-x, #2a4654);
+  background: transparent;
+  color: var(--code-text-2);
+}
+
+.code-orb {
+  position: relative;
+}
+
+/* Carte de validation : tout se lit de haut en bas — l'alerte, ce qui va se faire, le message, la décision. */
+.code-confirm {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--code-amber-line);
+  border-radius: 24px;
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(255, 181, 71, 0.1), transparent 60%),
+    var(--code-amber-bg);
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--code-amber);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 24px rgba(255, 181, 71, 0.08);
+  animation: code-confirm-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes code-confirm-in { from { opacity: 0; transform: translateY(10px); } }
+.code-confirm__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.code-confirm__icon { flex: none; }
+.code-confirm__tag {
+  flex: 1;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+.code-confirm__left {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border: 1px solid var(--code-amber-line);
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.code-confirm__title {
+  display: block;
+  font: 600 16px var(--code-sans);
+  color: var(--code-amber-text);
+}
+.code-confirm__meta {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--code-amber-muted);
+}
+.code-confirm__summary,
+.code-confirm__quote {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--code-encre-ambre, #ffe7c2);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+/* Le message lui-même, mis à part comme dans une conversation. */
+.code-confirm__quote {
+  max-height: 9.5em;
+  overflow-y: auto;
+  padding: 10px 12px;
+  border-left: 3px solid var(--code-amber);
+  border-radius: 4px 10px 10px 4px;
+  background: rgba(255, 181, 71, 0.07);
+}
+.code-confirm__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.code-confirm__actions {
+  display: flex;
+  gap: 8px;
+}
+.code-confirm__actions .code-btn {
+  flex: 1;
+  min-width: 110px;
+}
+.code-confirm__hint {
+  flex: 1 1 220px;
+  font-size: 12px;
+  color: var(--code-amber-muted);
+}
+.code-confirm--pile .code-confirm__actions { flex: 1 1 100%; order: -1; }
+.code-confirm--ligne {
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+}
+/* Le temps qui reste : un filet qui se vide. */
+.code-confirm__timer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--code-amber);
+  box-shadow: 0 0 8px var(--code-amber);
+  transform-origin: left;
+  animation: code-confirm-timer var(--ms, 30s) linear both;
+}
+@keyframes code-confirm-timer { to { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .code-confirm, .code-confirm__timer { animation: none; }
+}
+
+.code-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: var(--code-cyan);
+  animation: code-caret 1s steps(1) infinite;
+}
+@keyframes code-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-caret {
+    animation: none;
+  }
+}
+
+/* L'orbe éparpillée sur les bords de l'écran (mobile, interface ouverte). */
+.code-edge-swarm {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  pointer-events: none;
+  z-index: 40;
+  animation: code-edge-in 0.5s ease-out both;
+}
+@keyframes code-edge-in {
+  from { opacity: 0; }
+}
+
+/* ── Horizon : un sol quadrillé qui fuit vers l'horizon, l'orbe flotte au-dessus et s'y reflète. ── */
+.horizon {
+  position: absolute;
+  left: 50%;
+  top: var(--horizon-top, 85%);
+  width: var(--horizon-w, 100vw);
+  height: var(--horizon-h, 50vh);
+  transform: translateX(-50%);
+  pointer-events: none;
+  /* Derrière tout le reste de l'écran (qui s'isole : `isolation: isolate`), devant son fond. */
+  z-index: -1;
+}
+.horizon__floor {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  perspective: var(--horizon-perspective, 260px);
+  perspective-origin: 50% 0;
+  mask-image: linear-gradient(180deg, #000 0, #000 25%, transparent 80%);
+}
+.horizon__grid {
+  position: absolute;
+  left: -60%;
+  width: 220%;
+  top: 0;
+  height: 320%;
+  transform-origin: 50% 0;
+  transform: rotateX(var(--horizon-tilt, 68deg));
+  background-image:
+    linear-gradient(rgba(var(--code-cyan-rgb), 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--code-cyan-rgb), 0.5) 1px, transparent 1px);
+  background-size: var(--horizon-cell, 48px) var(--horizon-cell, 48px);
+  background-position: 50% 0;
+  opacity: 0.45;
+  /* Le sol avance lentement vers vous. */
+  animation: horizon-run 4s linear infinite;
+}
+@keyframes horizon-run {
+  to {
+    background-position: 50% var(--horizon-cell, 48px);
+  }
+}
+.horizon__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--code-cyan-rgb), 0.9) 30%, rgba(var(--code-cyan-rgb), 0.9) 70%, transparent);
+  box-shadow: 0 0 18px 2px rgba(var(--code-cyan-rgb), 0.35);
+}
+/* Une brume au ras de l'horizon : le sol naît de la lumière. */
+.horizon__line::after {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: -30px;
+  height: 60px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(var(--code-cyan-rgb), 0.16), transparent 70%);
+}
+.horizon__reflet {
+  position: absolute;
+  left: 50%;
+  top: var(--reflet-top, 4px);
+  width: var(--reflet-w, 190px);
+  height: var(--reflet-h, 30px);
+  margin-left: calc(var(--reflet-w, 190px) / -2);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(var(--code-cyan-rgb), 0.5), rgba(var(--code-cyan-rgb), 0.12) 45%, transparent 72%);
+  filter: blur(4px);
+  animation: horizon-reflet 6s ease-in-out infinite;
+}
+@keyframes horizon-reflet {
+  50% {
+    transform: scale(0.82);
+    opacity: 0.65;
+  }
+}
+/* L'orbe flotte, en phase avec son reflet. */
+.horizon-float {
+  position: relative;
+  z-index: 1;
+  animation: horizon-float 6s ease-in-out infinite;
+}
+@keyframes horizon-float {
+  50% {
+    transform: translateY(-10px);
+  }
+}
+[data-clair] .horizon__grid {
+  opacity: 0.32;
+}
+[data-clair] .horizon__line {
+  box-shadow: 0 0 14px 1px rgba(var(--code-cyan-rgb), 0.25);
+}
+.horizon--mac {
+  --horizon-perspective: 360px;
+  --horizon-tilt: 70deg;
+  --horizon-cell: 64px;
+  --reflet-w: 300px;
+  --reflet-h: 40px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .horizon__grid,
+  .horizon__reflet,
+  .horizon-float {
+    animation: none;
+  }
+}

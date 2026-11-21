@@ -1,0 +1,76 @@
+/* ── Lieux (Google Maps) : la carte aux repères numérotés, la liste, le résumé aux renvois cliquables ── */
+
+.lx { display: flex; flex-direction: column; gap: 16px; color: var(--code-text); }
+.lx__head { display: flex; align-items: center; gap: 16px; }
+.lx__glyph svg { display: block; filter: drop-shadow(0 0 12px rgba(var(--code-cyan-rgb), 0.55)); animation: lx-flotte 3.2s ease-in-out infinite; }
+.lx__glyph path { fill: rgba(var(--code-cyan-rgb), 0.16); stroke: var(--code-cyan); stroke-width: 1.6; }
+.lx__glyph circle { fill: var(--code-cyan); }
+@keyframes lx-flotte { 50% { transform: translateY(-3px); } }
+.lx__titre { min-width: 0; }
+.lx__eyebrow { margin: 0 0 4px; font-size: 11px; letter-spacing: 0.2em; color: var(--code-cyan); }
+.lx__titre h3 { margin: 0; font: 600 21px var(--code-display); letter-spacing: 0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lx__titre h3::first-letter { text-transform: uppercase; }
+
+/* Carte et liste côte à côte ; la liste défile si elle est longue. */
+.lx__corps { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(220px, 1fr); gap: 14px; }
+.lx-map.route-map { height: clamp(300px, 46vh, 480px); }
+.lx__liste { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; max-height: clamp(300px, 46vh, 480px); overflow-y: auto; scrollbar-width: thin; }
+.lx__lieu {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px;
+  padding: 10px 12px; border: 1px solid rgba(var(--code-cyan-rgb), 0.18); background: rgba(var(--code-cyan-rgb), 0.04);
+  cursor: pointer; transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  animation: lx-entre 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both; animation-delay: calc(0.15s + var(--lx-i, 0) * 0.07s);
+}
+@keyframes lx-entre { from { opacity: 0; transform: translateX(14px); } }
+.lx__lieu:hover { border-color: rgba(var(--code-cyan-rgb), 0.45); }
+.lx__lieu--on { border-color: #ff9a3c; background: rgba(255, 154, 60, 0.08); box-shadow: 0 0 22px rgba(255, 154, 60, 0.18), inset 3px 0 0 #ff9a3c; }
+.lx__num {
+  width: 30px; height: 30px; display: grid; place-items: center; padding: 0; cursor: pointer;
+  border: 1px solid rgba(var(--code-cyan-rgb), 0.7); background: rgba(var(--code-cyan-rgb), 0.12); color: var(--code-cyan);
+  font-size: 13px; font-weight: 700;
+}
+.lx__lieu--on .lx__num { border-color: #ff9a3c; background: #ff9a3c; color: #1d0c00; }
+.lx__info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.lx__info strong { font: 600 14.5px var(--code-sans); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lx__liens { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.lx__liens a { font: 500 11px var(--code-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--code-muted); text-decoration: none; border-bottom: 1px solid transparent; }
+.lx__liens a:hover { color: var(--code-cyan); border-bottom-color: currentColor; }
+
+/* Repères : gouttes numérotées, cyan ; le lieu choisi passe à l'orange et grandit. */
+.lx-pin { width: 30px; height: 40px; padding: 0; border: 0; background: none; cursor: pointer; }
+/* MapLibre place le repère en absolu : ne pas l'écraser (sinon les repères se suivent en ligne). */
+.maplibregl-marker.lx-pin { position: absolute; }
+.lx-pin svg { display: block; filter: drop-shadow(0 3px 8px rgba(var(--code-cyan-rgb), 0.55)); animation: route-drop 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) var(--lx-delay, 0.3s) both; transition: transform 0.25s; transform-origin: 50% 100%; }
+.lx-pin path { fill: #0b2733; stroke: var(--code-cyan); stroke-width: 1.8; transition: fill 0.25s, stroke 0.25s; }
+.lx-pin span { position: absolute; left: 0; right: 0; top: 7px; line-height: 1; text-align: center; font: 700 12px var(--code-mono); color: var(--code-cyan); pointer-events: none; animation: route-drop 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) var(--lx-delay, 0.3s) both; }
+.lx-pin:hover svg { transform: scale(1.12); }
+.lx-pin--on { z-index: 2; }
+.lx-pin--on svg { transform: scale(1.3); filter: drop-shadow(0 4px 14px rgba(255, 140, 50, 0.75)); }
+.lx-pin--on path { fill: var(--code-encre-rouge, #ff9a3c); stroke: #fff3e0; }
+.lx-pin--on span { color: #1d0c00; transform: translateY(-3px); }
+
+/* Le résumé de Google : ses renvois deviennent des pastilles qui allument le lieu. */
+.lx__resume { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border-left: 2px solid rgba(var(--code-cyan-rgb), 0.5); background: linear-gradient(90deg, rgba(var(--code-cyan-rgb), 0.07), transparent 70%); }
+.lx__resume p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--code-text); }
+.lx__resume strong { color: var(--code-text); font-weight: 600; }
+.lx__puce { position: relative; padding-left: 16px; }
+.lx__puce::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; background: var(--code-cyan); box-shadow: 0 0 8px var(--code-cyan); }
+.lx-ref {
+  display: inline-grid; place-items: center; min-width: 19px; height: 19px; margin: 0 2px; padding: 0 4px; vertical-align: 1px; cursor: pointer;
+  border: 1px solid rgba(var(--code-cyan-rgb), 0.6); background: rgba(var(--code-cyan-rgb), 0.1); color: var(--code-cyan); font: 700 10.5px var(--code-mono);
+  transition: background 0.2s, color 0.2s;
+}
+.lx-ref:hover { background: rgba(var(--code-cyan-rgb), 0.3); }
+.lx-ref--on { border-color: #ff9a3c; background: #ff9a3c; color: #1d0c00; }
+
+.lx__source { margin: 0; font-size: 10.5px; letter-spacing: 0.16em; color: var(--code-faint); }
+.lx__source a { color: var(--code-muted); }
+
+@container holo-scene (max-width: 760px) {
+  .lx__corps { grid-template-columns: 1fr; }
+  .lx-map.route-map { height: clamp(240px, 42vh, 360px); }
+  .lx__liste { max-height: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lx__glyph svg, .lx__lieu, .lx-pin svg, .lx-pin span { animation: none; }
+}

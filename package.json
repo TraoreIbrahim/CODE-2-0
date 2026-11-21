@@ -1,0 +1,36 @@
+{
+  "name": "code-2",
+  "version": "0.0.0",
+  "private": true,
+  "description": "CODE 2.0 — assistant vocal personnel, libre et auto-hébergé, qui marche avec le modèle de votre choix.",
+  "author": "Ibra Code (https://ibracode.com)",
+  "license": "AGPL-3.0-only",
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "postinstall": "node scripts/copy-vad-assets.mjs && node scripts/ensure-electron.mjs",
+    "dev": "concurrently -k -n serveur,bureau -c cyan,yellow \"npm run dev -w @code/server\" \"npm run dev -w @code/desktop\"",
+    "dev:server": "npm run dev -w @code/server",
+    "dev:desktop": "npm run dev -w @code/desktop",
+    "dev:mobile": "npm run dev -w @code/mobile",
+    "build": "npm run build -w @code/mobile && npm run build -w @code/desktop",
+    "start:server": "npm start -w @code/server",
+    "test": "node --test \"scripts/**/*.test.mjs\" && npm test --workspaces --if-present",
+    "verifier": "node scripts/verifier-publication.mjs",
+    "verifier:publication": "node scripts/verifier-publication.mjs --strict && gitleaks git --no-banner --redact .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "secrets": "node scripts/secrets.mjs",
+    "modele-voix": "node scripts/modele-voix.mjs",
+    "icones": "node scripts/icones.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "tsx": "^4.23.15",
+    "concurrently": "^10.0.6"
+  }
+}

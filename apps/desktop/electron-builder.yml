@@ -1,0 +1,28 @@
+appId: org.code2.assistant
+productName: CODE 2.0
+# electron-builder veut la version exacte (package.json n'a qu'un intervalle).
+electronVersion: 45.1.0
+directories:
+  buildResources: build
+files:
+  - 'out/**'
+mac:
+  target:
+    - target: dmg
+      arch: [arm64, x64]
+  # Signature ad hoc (pas encore de certificat Developer ID) : macOS demande d'autoriser l'ouverture la
+  # première fois.
+  identity: '-'
+  category: public.app-category.productivity
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    NSMicrophoneUsageDescription: L'assistant a besoin du micro pour vous écouter.
+    NSAudioCaptureUsageDescription: Pendant l'enregistrement d'une réunion, l'assistant capte le son de l'ordinateur pour transcrire aussi les personnes en visio.
+    NSLocationUsageDescription: L'assistant utilise votre position, au moment où vous le demandez, pour calculer un itinéraire.
+    NSLocationWhenInUseUsageDescription: L'assistant utilise votre position, au moment où vous le demandez, pour calculer un itinéraire.
+win:
+  target: nsis
+linux:
+  target: [AppImage, deb]
+  category: Utility

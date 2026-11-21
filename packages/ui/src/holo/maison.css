@@ -1,0 +1,234 @@
+/* Maison : le plan des pièces (température en grand, appareils en tuiles) et le viseur d'une caméra.
+   L'ambre est la lumière d'un appareil en marche ; le rouge, ce qui demande l'attention. */
+
+.mai { container: maison / inline-size; display: flex; flex-direction: column; gap: 16px; }
+
+.mai-tete { display: flex; flex-direction: column; gap: 4px; }
+.mai-tete__kicker { font-size: 10.5px; letter-spacing: 0.14em; color: var(--code-faint); }
+.mai-tete__titre {
+  margin: 0;
+  font: 600 clamp(28px, 3.8vw, 40px) / 1.05 var(--code-display);
+  letter-spacing: 0.02em;
+  color: var(--code-text);
+  overflow-wrap: anywhere;
+}
+.mai-tete__sous { font-size: 11px; letter-spacing: 0.12em; color: var(--code-text-2); }
+
+.mai-message {
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--code-red-line);
+  border-radius: 8px;
+  background: var(--code-red-bg);
+  color: var(--code-red-text);
+  font-size: 13.5px;
+}
+
+/* ── Le plan : une case par pièce, aux coins marqués comme sur un plan d'architecte ── */
+.mai-plan { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 14px; }
+.mai-plan--seule { grid-template-columns: minmax(0, 1fr); }
+
+.mai-piece {
+  --coin: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 14px 16px;
+  border: 1px solid var(--code-line-soft, var(--code-line));
+  border-radius: 4px;
+  background:
+    linear-gradient(rgba(var(--code-cyan-rgb), 0.035) 1px, transparent 1px) 0 0 / 100% 22px,
+    rgba(var(--code-cyan-rgb), 0.02);
+  animation: today-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+/* Les équerres : deux coins opposés, comme les repères d'un plan. */
+.mai-piece::before,
+.mai-piece::after {
+  content: '';
+  position: absolute;
+  width: var(--coin);
+  height: var(--coin);
+  border-color: rgba(var(--code-cyan-rgb), 0.55);
+  border-style: solid;
+  pointer-events: none;
+}
+.mai-piece::before { top: -1px; left: -1px; border-width: 1.5px 0 0 1.5px; }
+.mai-piece::after { bottom: -1px; right: -1px; border-width: 0 1.5px 1.5px 0; }
+
+.mai-piece__tete { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 6px 12px; }
+.mai-piece__titre { display: flex; flex-direction: column; gap: 3px; min-width: 8em; flex: 1 1 8em; }
+.mai-piece__titre h3 {
+  margin: 0;
+  font: 600 13px / 1.2 var(--code-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--code-text);
+  overflow-wrap: anywhere;
+}
+.mai-piece__titre .code-mono { font-size: 10.5px; letter-spacing: 0.08em; color: var(--code-faint); }
+.mai-piece__temp {
+  flex: none;
+  font: 500 34px / 0.9 var(--code-display);
+  letter-spacing: -0.01em;
+  color: var(--code-cyan);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 18px rgba(var(--code-cyan-rgb), 0.35);
+}
+
+/* Les relevés (humidité, fenêtres, mouvement) : une ligne discrète sous le nom. */
+.mai-releves { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.mai-releve {
+  padding: 3px 9px;
+  border: 1px solid var(--code-line);
+  border-radius: 999px;
+  font: 500 11.5px var(--code-mono);
+  color: var(--code-text-2);
+}
+.mai-releve__nom { color: var(--code-faint); }
+.mai-releve.is-actif { border-color: var(--code-amber-line); color: var(--code-amber-text); }
+.mai-releve.is-alerte { border-color: var(--code-red-line); background: var(--code-red-bg); color: var(--code-red-text); }
+.mai-releve.is-absent { opacity: 0.5; border-style: dashed; }
+
+/* ── Les appareils ── */
+.mai-apps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 128px), 1fr)); gap: 8px; }
+.mai-apps > li { min-width: 0; animation: today-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 35ms); }
+
+.mai-app {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 58px;
+  padding: 9px 10px;
+  border: 1px solid var(--code-line);
+  border-radius: 10px;
+  background: rgba(var(--code-cyan-rgb), 0.025);
+  color: var(--code-text);
+  font: inherit;
+  text-align: left;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.15s ease;
+}
+button.mai-app { cursor: pointer; }
+button.mai-app:hover { border-color: rgba(var(--code-cyan-rgb), 0.45); }
+button.mai-app:active { transform: scale(0.97); }
+button.mai-app:focus-visible { outline: 2px solid var(--code-cyan); outline-offset: 2px; }
+
+.mai-app__icone {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--code-line);
+  color: var(--code-text-2);
+  transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+.mai-app__icone svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+.mai-app__texte { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mai-app__nom { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; font-weight: 500; line-height: 1.2; overflow-wrap: break-word; hyphens: auto; padding-right: 8px; }
+.mai-app__etat { font: 500 11.5px / 1.3 var(--code-mono); color: var(--code-faint); overflow-wrap: break-word; }
+.mai-app__detail { color: var(--code-faint); }
+
+/* En marche : l'icône s'éclaire comme une lampe. */
+.mai-app.is-actif { border-color: var(--code-amber-line); background: var(--code-amber-bg); }
+.mai-app.is-actif .mai-app__icone {
+  color: #1a1206;
+  border-color: var(--code-amber);
+  background: var(--code-amber);
+  box-shadow: 0 0 16px -2px var(--code-amber), 0 0 0 4px color-mix(in srgb, var(--code-amber) 14%, transparent);
+}
+.mai-app.is-actif .mai-app__etat { color: var(--code-amber-text); }
+
+.mai-app.is-alerte { border-color: var(--code-red-line); background: var(--code-red-bg); }
+.mai-app.is-alerte .mai-app__icone { color: var(--code-red-text); border-color: var(--code-red-line); background: transparent; box-shadow: none; }
+.mai-app.is-alerte .mai-app__etat { color: var(--code-red-text); }
+
+.mai-app.is-absent { opacity: 0.45; border-style: dashed; }
+
+/* Ses commandes demandent un oui : un petit cadenas dans le coin. */
+.mai-app__garde { position: absolute; top: 6px; right: 7px; color: var(--code-faint); }
+.mai-app__garde svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; }
+
+/* Touché à l'instant (ou par la dernière commande) : un anneau qui s'efface. */
+.mai-app.is-focus::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--code-cyan);
+  animation: mai-anneau 1.4s ease-out 0.1s both;
+}
+@keyframes mai-anneau {
+  from { opacity: 1; }
+  to { opacity: 0; box-shadow: 0 0 0 7px transparent; }
+}
+
+/* ── Caméra : le viseur ── */
+.cam { display: flex; flex-direction: column; gap: 12px; }
+.cam-tete { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.cam-tete__kicker { font-size: 10.5px; letter-spacing: 0.14em; color: var(--code-faint); }
+.cam-tete__titre { margin: 2px 0 0; font: 600 clamp(24px, 3.2vw, 34px) / 1.05 var(--code-display); color: var(--code-text); }
+.cam-actualiser {
+  padding: 8px 14px;
+  border: 1px solid rgba(var(--code-cyan-rgb), 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--code-cyan);
+  font: 600 12px var(--code-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.cam-actualiser:hover:not(:disabled) { background: rgba(var(--code-cyan-rgb), 0.1); }
+.cam-actualiser:disabled { opacity: 0.6; cursor: progress; }
+.cam-actualiser:focus-visible { outline: 2px solid var(--code-cyan); outline-offset: 2px; }
+
+.cam-viseur { position: relative; margin: 0; padding: 10px; }
+.cam-viseur img,
+.cam-vide { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 3px; background: #000; }
+.cam-vide { display: grid; place-items: center; padding: 20px; color: var(--code-red-text); font-size: 14px; text-align: center; background: var(--code-red-bg); }
+.cam-viseur.is-attente img { filter: saturate(0.4) brightness(0.7); transition: filter 0.3s ease; }
+
+.cam-coin { position: absolute; width: 22px; height: 22px; border: 0 solid var(--code-cyan); pointer-events: none; }
+.cam-coin--hg { top: 0; left: 0; border-width: 2px 0 0 2px; }
+.cam-coin--hd { top: 0; right: 0; border-width: 2px 2px 0 0; }
+.cam-coin--bg { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+.cam-coin--bd { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+.cam-heure {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  background: rgba(2, 4, 10, 0.68);
+  color: #e8f6ff;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+}
+.cam-heure i { width: 7px; height: 7px; border-radius: 50%; background: #ff5a5a; box-shadow: 0 0 8px #ff5a5a; }
+.cam-note { color: var(--code-faint); font-size: 12px; }
+
+/* Le panneau est étroit (téléphone, colonne de côté) : une pièce par ligne, l'icône au-dessus du nom. */
+@container maison (max-width: 560px) {
+  .mai-plan { grid-template-columns: minmax(0, 1fr); }
+  .mai-piece__temp { font-size: 28px; }
+  .mai-apps { grid-template-columns: repeat(auto-fill, minmax(min(100%, 112px), 1fr)); }
+  /* Étroit : l'icône au-dessus, le nom garde toute la largeur de la tuile. */
+  .mai-app { grid-template-columns: minmax(0, 1fr); align-items: start; gap: 8px; padding: 10px; }
+  .mai-app__icone { width: 30px; height: 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mai-piece, .mai-apps > li, .mai-app.is-focus::after { animation: none; }
+  .mai-app, .mai-app__icone, .cam-viseur.is-attente img { transition: none; }
+}

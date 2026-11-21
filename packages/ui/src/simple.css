@@ -1,0 +1,276 @@
+/*
+ * Écran simplifié : tout à la voix. L'heure en très grand en haut, l'orbe posée sur l'horizon au centre,
+ * le dernier échange en sous-titres en bas. Grandes cibles (48 px au moins, 64 px pour répondre).
+ */
+.simple {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: max(28px, env(safe-area-inset-top)) clamp(16px, 5vw, 72px) max(28px, env(safe-area-inset-bottom));
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--code-text);
+}
+
+.simple__haut {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+.simple__horloge {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.simple__heure {
+  font: 300 clamp(56px, 9vw, 120px) / 0.9 var(--code-display);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--code-text);
+  text-shadow: 0 0 40px rgba(var(--code-cyan-rgb), 0.25);
+}
+.simple__jour {
+  font: 500 clamp(12px, 1.3vw, 15px) var(--code-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--code-muted);
+}
+.simple__droite {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+}
+.simple__nom {
+  font: 300 clamp(16px, 1.8vw, 22px) var(--code-display);
+  letter-spacing: 0.42em;
+  text-transform: lowercase;
+  color: var(--code-text-2);
+}
+.simple__reglages {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid var(--code-line);
+  border-radius: 24px;
+  background: rgba(var(--code-ombre, 2, 8, 12), 0.4);
+  color: var(--code-text-2);
+  font: 500 16px var(--code-display);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color 160ms, color 160ms;
+}
+.simple__reglages:hover,
+.simple__reglages:focus-visible {
+  border-color: rgba(var(--code-cyan-rgb), 0.6);
+  color: var(--code-text);
+}
+
+.simple__centre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 3vh, 30px);
+  min-height: 0;
+}
+/* L'horizon passe juste sous l'orbe, et s'étend à toute la largeur de l'écran. */
+.simple__scene {
+  position: relative;
+  flex: none;
+  --horizon-top: 92%;
+  --horizon-w: 100vw;
+  --horizon-h: 55vh;
+}
+.simple__orbe {
+  display: block;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.simple__orbe:disabled {
+  cursor: default;
+}
+.simple__orbe:focus-visible {
+  outline: 2px solid var(--code-cyan);
+  outline-offset: 8px;
+}
+.simple__etat {
+  position: relative;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.simple__etat .code-state-label {
+  font: 500 clamp(20px, 2.4vw, 30px) var(--code-display);
+  letter-spacing: 0.3em;
+}
+.simple__aide {
+  font-size: clamp(15px, 1.5vw, 18px);
+  color: var(--code-muted);
+}
+
+.simple__bas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  min-height: clamp(120px, 22vh, 220px);
+  text-align: center;
+}
+.simple__soustitres {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: min(980px, 100%);
+}
+.simple__vous {
+  margin: 0;
+  font-size: clamp(15px, 1.5vw, 19px);
+  color: var(--code-muted);
+}
+.simple__vous .code-mono,
+.simple__qui {
+  margin-right: 10px;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  vertical-align: 0.15em;
+}
+.simple__qui {
+  color: var(--code-cyan);
+}
+.simple__lui {
+  margin: 0;
+  font: 400 clamp(22px, 2.7vw, 36px) / 1.35 var(--code-sans);
+  color: var(--code-text);
+  text-wrap: balance;
+}
+/* La réponse qui arrive : un curseur au bout. */
+.simple__lui.is-direct::after {
+  content: '';
+  display: inline-block;
+  width: 0.5em;
+  height: 0.12em;
+  margin-left: 0.2em;
+  background: var(--code-cyan);
+  vertical-align: 0.1em;
+  animation: simple-curseur 1s steps(2) infinite;
+}
+@keyframes simple-curseur {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Une action à valider : la carte habituelle, en plus grand. */
+.simple__accord {
+  width: min(860px, 100%);
+  text-align: left;
+}
+.simple__accord .code-confirm__title {
+  font-size: clamp(20px, 2vw, 26px);
+}
+.simple__accord .code-confirm__summary,
+.simple__accord .code-confirm__quote {
+  font-size: clamp(16px, 1.5vw, 19px);
+}
+.simple__accord .code-btn {
+  min-height: 56px;
+  padding: 0 30px;
+  font-size: 18px;
+}
+
+/* Un rappel qui sonne : en ambre, deux grands boutons. */
+.simple__rappel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(860px, 100%);
+  padding: 22px clamp(18px, 3vw, 36px);
+  border: 1px solid var(--code-amber-line);
+  border-radius: 28px;
+  background: var(--code-amber-bg);
+  box-shadow: 0 0 48px -18px var(--code-amber);
+}
+.simple__rappel small {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--code-amber);
+}
+.simple__rappel strong {
+  font: 500 clamp(24px, 3vw, 38px) / 1.2 var(--code-display);
+  color: var(--code-amber-text);
+}
+.simple__boutons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.simple__bouton {
+  min-height: 64px;
+  padding: 0 32px;
+  border: 1px solid var(--code-line);
+  border-radius: 32px;
+  background: transparent;
+  color: var(--code-text);
+  font: 500 20px var(--code-display);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.simple__bouton--oui {
+  border-color: var(--code-cyan);
+  background: linear-gradient(90deg, rgba(var(--code-cyan-rgb), 0.24), rgba(var(--code-cyan-rgb), 0.06));
+}
+.simple__rappel .simple__bouton--oui {
+  border-color: var(--code-amber);
+  background: linear-gradient(90deg, rgba(var(--code-contre-rgb), 0.28), rgba(var(--code-contre-rgb), 0.08));
+}
+.simple__bouton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.simple__erreur {
+  margin: 0;
+  font-size: 15px;
+  color: var(--code-red-text);
+}
+
+@media (max-width: 600px) {
+  .simple__haut {
+    align-items: center;
+  }
+  .simple__nom,
+  .simple__ville {
+    display: none;
+  }
+  .simple__reglages {
+    padding: 0 16px;
+  }
+  .simple__boutons {
+    width: 100%;
+  }
+  .simple__bouton {
+    flex: 1 1 140px;
+    padding: 0 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .simple__lui.is-direct::after {
+    animation: none;
+  }
+}

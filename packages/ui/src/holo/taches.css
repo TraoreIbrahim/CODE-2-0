@@ -1,0 +1,165 @@
+/* Tâches planifiées : cartes horodatées, exécution en cours qui balaie, résultat lisible et copiable. */
+
+.taches-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.taches-next {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 10px 14px;
+  border: 1px solid rgba(var(--code-cyan-rgb), 0.35);
+  background: linear-gradient(90deg, transparent, rgba(var(--code-cyan-rgb), 0.08));
+  clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%, 0 12px);
+}
+.taches-next__clock { font: 600 30px/1.05 var(--code-mono); letter-spacing: 0.04em; color: var(--code-cyan); text-shadow: 0 0 22px rgba(var(--code-cyan-rgb), 0.55); font-variant-numeric: tabular-nums; }
+.taches-next__what { font: 500 12px var(--code-sans); color: var(--code-text-2); max-width: 260px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.taches-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.tache-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  padding: 14px 16px 14px 0;
+  border: 1px solid var(--code-line);
+  background: rgba(var(--code-ombre, 4, 12, 18), 0.55);
+  overflow: hidden;
+  animation: perso-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+.tache-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--code-cyan);
+  box-shadow: 0 0 12px var(--code-cyan);
+}
+.tache-card.is-focus { border-color: rgba(var(--code-cyan-rgb), 0.6); box-shadow: 0 0 26px rgba(var(--code-cyan-rgb), 0.14) inset; }
+.tache-card--pause::before,
+.tache-card--terminee::before { background: var(--code-grey); box-shadow: none; }
+.tache-card--pause,
+.tache-card--terminee { opacity: 0.72; }
+
+.tache-card__when { display: flex; flex-direction: column; align-items: center; gap: 2px; padding-top: 2px; border-right: 1px dashed rgba(var(--code-cyan-rgb), 0.22); }
+.tache-card__when strong { font: 600 22px var(--code-mono); color: var(--code-cyan); font-variant-numeric: tabular-nums; }
+.tache-card__when small { padding: 0 4px; font: 500 9.5px var(--code-mono); letter-spacing: 0.04em; color: var(--code-muted); text-transform: uppercase; text-align: center; overflow-wrap: anywhere; }
+.tache-card--pause .tache-card__when strong,
+.tache-card--terminee .tache-card__when strong { color: var(--code-grey); }
+
+.tache-card__body { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.tache-card__kicker { display: flex; align-items: center; gap: 6px; font: 600 10.5px var(--code-mono); letter-spacing: 0.16em; color: var(--code-cyan); }
+.tache-card__title { font: 600 16px var(--code-display); letter-spacing: 0.02em; color: var(--code-text); overflow-wrap: anywhere; }
+.tache-card__consigne {
+  margin: 0;
+  font: 400 12.5px/1.45 var(--code-sans);
+  color: var(--code-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tache-card__last {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid rgba(var(--code-cyan-rgb), 0.22);
+  background: rgba(var(--code-cyan-rgb), 0.05);
+  color: var(--code-text-2);
+  text-align: left;
+  cursor: pointer;
+  font: 400 13px var(--code-sans);
+}
+.tache-card__last:hover { border-color: rgba(var(--code-cyan-rgb), 0.55); background: rgba(var(--code-cyan-rgb), 0.1); }
+.tache-card__last small { font: 600 10px var(--code-mono); letter-spacing: 0.14em; color: var(--code-cyan); }
+.tache-card__last--erreur { border-color: var(--code-red-line); background: var(--code-red-bg); }
+.tache-card__last--erreur small { color: var(--code-red-text); }
+
+/* Exécution en cours : un faisceau qui balaie. */
+.tache-card__run {
+  position: relative;
+  margin: 4px 0 0;
+  padding: 7px 10px;
+  font: 600 10.5px var(--code-mono);
+  letter-spacing: 0.2em;
+  color: var(--code-amber);
+  border: 1px solid var(--code-amber-line);
+  background: var(--code-amber-bg);
+  overflow: hidden;
+}
+.tache-card__run span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  left: -40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 181, 71, 0.35), transparent);
+  animation: tache-scan 1.6s ease-in-out infinite;
+}
+.tache-card.is-running { border-color: var(--code-amber-line); }
+.tache-card.is-running::before { background: var(--code-amber); box-shadow: 0 0 14px var(--code-amber); }
+@keyframes tache-scan {
+  to { left: 100%; }
+}
+
+.tache-card__actions { display: flex; flex-direction: column; gap: 6px; }
+.tache-card__actions .holo-action:disabled { opacity: 0.4; cursor: default; }
+
+/* Résultat d'une exécution. */
+.tache-res__head { display: flex; flex-direction: column; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--code-line); }
+.tache-res__lead { margin: 0; font: 400 15px/1.5 var(--code-sans); color: var(--code-text-2); border-left: 2px solid var(--code-cyan); padding-left: 12px; }
+.tache-res__tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.tache-res__error { margin: 0; padding: 12px; border: 1px solid var(--code-red-line); background: var(--code-red-bg); color: var(--code-red-text); font: 400 14px var(--code-sans); }
+.tache-res__sections { display: flex; flex-direction: column; gap: 14px; }
+
+.tache-sec {
+  border: 1px solid var(--code-line);
+  background: rgba(var(--code-ombre, 4, 12, 18), 0.55);
+  padding: 14px 16px;
+  animation: perso-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+.tache-sec__head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; margin-bottom: 10px; }
+.tache-sec__index { font: 600 22px var(--code-mono); color: rgba(var(--code-cyan-rgb), 0.5); }
+.tache-sec__head h4 { margin: 0; font: 600 17px/1.3 var(--code-display); letter-spacing: 0.02em; color: var(--code-text); overflow-wrap: anywhere; }
+.tache-copy.is-done { border-color: var(--code-green); color: var(--code-green); }
+
+.tache-md { font: 400 14.5px/1.6 var(--code-sans); color: var(--code-text-2); overflow-wrap: anywhere; }
+.tache-md > :first-child { margin-top: 0; }
+.tache-md > :last-child { margin-bottom: 0; }
+.tache-md p { margin: 0 0 10px; }
+.tache-md h4 { margin: 16px 0 6px; font: 600 15px var(--code-display); color: var(--code-text); }
+.tache-md h5 { margin: 14px 0 4px; font: 600 11px var(--code-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--code-cyan); }
+.tache-md strong { color: var(--code-text); font-weight: 600; }
+.tache-md em { color: var(--code-amber-text); font-style: normal; }
+.tache-md code { font: 400 13px var(--code-mono); color: var(--code-cyan); background: rgba(var(--code-cyan-rgb), 0.08); padding: 1px 5px; }
+.tache-md ul,
+.tache-md ol { margin: 0 0 10px; padding-left: 20px; }
+.tache-md li { margin: 3px 0; }
+.tache-md li::marker { color: var(--code-cyan); }
+.tache-md ol li::marker { font: 600 12px var(--code-mono); }
+.tache-md blockquote { margin: 0 0 10px; padding: 8px 12px; border-left: 2px solid var(--code-amber); background: rgba(255, 181, 71, 0.06); color: var(--code-amber-text); }
+.tache-md hr { border: 0; border-top: 1px dashed var(--code-line); margin: 14px 0; }
+
+.tache-res__hist { display: flex; flex-direction: column; gap: 6px; }
+.tache-res__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tache-chip { padding: 6px 10px; border: 1px solid var(--code-line); background: transparent; color: var(--code-muted); font: 500 11.5px var(--code-mono); cursor: pointer; }
+.tache-chip:hover { border-color: rgba(var(--code-cyan-rgb), 0.55); color: var(--code-cyan); }
+.tache-chip--erreur { color: var(--code-red-text); }
+
+@container perso (max-width: 560px) {
+  .tache-card { grid-template-columns: 70px minmax(0, 1fr); padding-right: 12px; }
+  .tache-card__when strong { font-size: 18px; }
+  .tache-card__actions { grid-column: 2; flex-direction: row; }
+  .taches-next { align-items: flex-start; }
+  .taches-next__what { text-align: left; }
+  .tache-sec { padding: 12px; }
+  .tache-sec__head { grid-template-columns: minmax(0, 1fr) auto; }
+  .tache-sec__index { display: none; }
+}

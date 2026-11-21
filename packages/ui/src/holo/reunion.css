@@ -1,0 +1,220 @@
+/* Réunions : le rapport (l'essentiel, décisions, qui fait quoi, points ouverts), la transcription et sa
+   frise, la liste, et le bandeau d'enregistrement. Le cyan dit ce qui est acquis, l'ambre ce qui reste à
+   faire ou à trancher ; le rouge ne sert qu'à dire « on enregistre ». */
+
+.reu { container: reunion / inline-size; display: flex; flex-direction: column; gap: 18px; }
+.reu h3 { margin: 0; font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; color: var(--code-faint); }
+.reu .holo-action { flex: none; width: auto; display: inline-flex; align-items: center; gap: 7px; }
+.reu .holo-action:disabled { opacity: 0.45; cursor: default; }
+
+/* ── En-tête ── */
+.reu-tete { display: flex; flex-direction: column; gap: 6px; }
+.reu-tete__kicker { font-size: 10.5px; letter-spacing: 0.14em; color: var(--code-faint); }
+.reu-tete__titre { margin: 0; font: 600 clamp(26px, 3.4vw, 38px) / 1.08 var(--code-display); letter-spacing: 0.015em; color: var(--code-text); overflow-wrap: anywhere; }
+.reu-presents { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 8px; }
+.reu-presents li { display: inline-flex; align-items: center; gap: 7px; padding: 3px 11px 3px 3px; border: 1px solid var(--code-line); border-radius: 999px; font-size: 13px; color: var(--code-text-2); }
+.reu-presents i, .reu-personne__qui i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: rgba(var(--code-cyan-rgb), 0.14); color: var(--code-cyan); font: 600 10px var(--code-mono); font-style: normal; letter-spacing: 0.02em; }
+
+/* ── Les chiffres : une réglette, quatre cases séparées d'un filet ── */
+.reu-chiffres { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--code-line); border-radius: 10px; overflow: hidden; }
+.reu-chiffres > div { display: flex; flex-direction: column; gap: 5px; padding: 11px 14px 12px; border-left: 1px solid var(--code-line); }
+.reu-chiffres > div:first-child { border-left: none; }
+.reu-chiffres dt { font: 500 10px var(--code-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--code-faint); }
+.reu-chiffres dd { margin: 0; font: 500 22px / 1 var(--code-display); letter-spacing: 0.01em; color: var(--code-text-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.reu-chiffres .is-plein dd { color: var(--code-cyan); text-shadow: 0 0 16px rgba(var(--code-cyan-rgb), 0.35); }
+.reu-chiffres .is-ambre dd { color: var(--code-amber); text-shadow: 0 0 16px color-mix(in srgb, var(--code-amber) 35%, transparent); }
+
+.reu-etat { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 10px 12px; border: 1px solid var(--code-line); border-radius: 8px; font-size: 13px; color: var(--code-text-2); }
+.reu-etat .code-mono { font-size: 10.5px; letter-spacing: 0.14em; color: var(--code-cyan); }
+.reu-etat--rec { border-color: color-mix(in srgb, #ff5a5a 50%, transparent); }
+.reu-etat--rec .code-mono { color: #ff8a8a; }
+.reu-etat--erreur { border-color: var(--code-red-line); background: var(--code-red-bg); color: var(--code-red-text); }
+.reu-etat--note { border-style: dashed; color: var(--code-muted); }
+.reu-jauge { display: block; height: 3px; border-radius: 2px; background: rgba(var(--code-cyan-rgb), 0.14); overflow: hidden; }
+.reu-jauge i { display: block; height: 100%; border-radius: inherit; background: var(--code-cyan); box-shadow: 0 0 10px var(--code-cyan); transition: width 0.6s ease; }
+
+/* ── Onglets et recherche ── */
+.reu-barre { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; border-bottom: 1px solid var(--code-line); }
+.reu-onglets { display: flex; gap: 22px; }
+.reu-onglets button { position: relative; padding: 9px 0 11px; border: none; background: none; color: var(--code-muted); font: 500 14px var(--code-display); letter-spacing: 0.08em; cursor: pointer; }
+.reu-onglets button:hover { color: var(--code-text); }
+.reu-onglets button.is-on { color: var(--code-cyan); }
+.reu-onglets button.is-on::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--code-cyan); box-shadow: 0 0 10px var(--code-cyan); }
+.reu-onglets button:focus-visible { outline: 2px solid var(--code-cyan); outline-offset: 2px; border-radius: 4px; }
+.reu-recherche { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; padding: 0 12px; height: 34px; min-width: min(240px, 100%); border: 1px solid var(--code-line); border-radius: 999px; color: var(--code-faint); transition: border-color 0.2s ease; }
+.reu-recherche:focus-within { border-color: var(--code-cyan); color: var(--code-cyan); }
+.reu-recherche input { flex: 1; min-width: 0; border: none; outline: none; background: none; color: var(--code-text); font: 400 14px var(--code-sans); }
+.reu-recherche input::placeholder { color: var(--code-faint); }
+.reu-recherche input::-webkit-search-cancel-button { display: none; }
+
+/* ── Le rapport ── */
+.reu-rapport { display: flex; flex-direction: column; gap: 18px; }
+.reu-essentiel { display: flex; flex-direction: column; gap: 8px; }
+.reu-essentiel p { margin: 0; max-width: 66ch; font-size: 17px; line-height: 1.55; color: var(--code-text); white-space: pre-line; }
+
+.reu-deux { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.reu-bloc { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid var(--code-line); border-radius: 10px; background: rgba(var(--code-cyan-rgb), 0.02); }
+.reu-bloc ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.reu-bloc li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; animation: today-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.reu-bloc li > i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; }
+.reu-bloc li > span { padding-top: 1px; font-size: 15px; line-height: 1.4; color: var(--code-text); overflow-wrap: anywhere; }
+.reu-bloc--decisions h3 { color: var(--code-cyan); }
+.reu-bloc--decisions li > i { background: rgba(var(--code-cyan-rgb), 0.16); color: var(--code-cyan); }
+.reu-bloc--points { border-color: var(--code-amber-line); border-style: dashed; background: transparent; }
+.reu-bloc--points h3 { color: var(--code-amber-text); }
+.reu-bloc--points li > i { border: 1px solid var(--code-amber-line); color: var(--code-amber); }
+
+/* Qui fait quoi : une colonne par personne, ses actions dessous. */
+.reu-faire { display: flex; flex-direction: column; gap: 12px; padding: 14px 14px 6px; border-left: 2px solid var(--code-amber); border-radius: 0 10px 10px 0; background: var(--code-amber-bg); }
+.reu-faire h3 { color: var(--code-amber-text); }
+.reu-personne { display: grid; grid-template-columns: minmax(120px, 0.34fr) minmax(0, 1fr); gap: 6px 16px; padding: 10px 0; border-top: 1px solid color-mix(in srgb, var(--code-amber) 16%, transparent); animation: today-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 60ms); }
+.reu-personne__qui { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 2px 9px; align-items: center; align-self: start; }
+.reu-personne__qui i { background: color-mix(in srgb, var(--code-amber) 20%, transparent); color: var(--code-amber); }
+.reu-personne__qui b { font: 600 15px var(--code-display); letter-spacing: 0.04em; color: var(--code-text); overflow-wrap: anywhere; }
+.reu-personne__qui small { grid-column: 2; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--code-amber-muted); }
+.reu-personne__qui.is-vide b { color: var(--code-amber-muted); font-weight: 500; }
+.reu-personne ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.reu-personne li { display: flex; align-items: center; gap: 10px; }
+.reu-action__texte { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.reu-action__texte strong { font-size: 15px; font-weight: 500; line-height: 1.35; color: var(--code-text); overflow-wrap: anywhere; }
+.reu-action__texte small { font-size: 10.5px; letter-spacing: 0.1em; color: var(--code-amber-text); }
+.reu-rappel { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid color-mix(in srgb, var(--code-amber) 30%, transparent); border-radius: 50%; background: transparent; color: var(--code-amber-muted); cursor: pointer; transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease; }
+.reu-rappel:hover { color: #1a1206; border-color: var(--code-amber); background: var(--code-amber); }
+.reu-rappel:focus-visible { outline: 2px solid var(--code-amber); outline-offset: 2px; }
+
+.reu-outils { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.reu-outils .code-mono { font-size: 10.5px; letter-spacing: 0.14em; color: var(--code-faint); margin-right: auto; }
+
+/* Pas encore de rapport : une invitation, pas un vide. */
+.reu-vierge { display: flex; flex-direction: column; gap: 8px; padding: 22px 18px; border: 1px dashed var(--code-line); border-radius: 12px; }
+.reu-vierge strong { font: 600 18px var(--code-display); letter-spacing: 0.03em; color: var(--code-text); }
+.reu-vierge p { margin: 0 0 6px; max-width: 58ch; font-size: 14.5px; line-height: 1.5; color: var(--code-muted); }
+
+/* ── La transcription ── */
+.reu-texte { display: flex; flex-direction: column; gap: 12px; }
+.reu-texte__tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.reu-texte__tete h3 { color: var(--code-amber-text); }
+
+/* La frise : la durée de la réunion, un trait par passage ; ceux qui parlent du sujet cherché s'allument. */
+.reu-frise { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: end; gap: 10px; }
+.reu-frise .code-mono { font-size: 10px; letter-spacing: 0.1em; color: var(--code-faint); }
+.reu-frise__ligne { position: relative; height: 18px; border-bottom: 1px solid var(--code-line); }
+.reu-frise__ligne i { position: absolute; bottom: 0; width: 2px; height: 7px; margin-left: -1px; border-radius: 1px 1px 0 0; background: rgba(var(--code-cyan-rgb), 0.4); }
+.reu-frise__ligne i.is-trouve { height: 16px; background: var(--code-amber); box-shadow: 0 0 10px -1px var(--code-amber); }
+
+.reu-passages { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.reu-passages li { display: grid; grid-template-columns: 4.6em minmax(0, 1fr); gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--code-line-soft, var(--code-line)); animation: today-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 30ms); }
+.reu-passages li:last-child { border-bottom: none; }
+.reu-passages time { padding-top: 3px; font-size: 11.5px; letter-spacing: 0.06em; color: var(--code-cyan); font-variant-numeric: tabular-nums; }
+.reu-passages li > div { display: flex; flex-direction: column; gap: 10px; }
+.reu-passages p { margin: 0; max-width: 70ch; font-size: 15px; line-height: 1.62; color: var(--code-text-2); overflow-wrap: anywhere; }
+.reu-passages li.is-trouve p { color: var(--code-text); }
+.reu-passages mark { padding: 0 2px; border-radius: 3px; background: color-mix(in srgb, var(--code-amber) 26%, transparent); color: var(--code-amber-text); }
+
+.reu-vide { margin: 0; padding: 6px 0; font-size: 14px; line-height: 1.5; color: var(--code-muted); }
+.reu-note { font-size: 12px; line-height: 1.45; color: var(--code-faint); }
+
+/* ── La liste ── */
+.reus-tete { flex-direction: row; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 16px; }
+.reus-tete > div:first-child { display: flex; flex-direction: column; gap: 6px; }
+.reus-liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.reus-liste > li { animation: today-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.reus-carte { display: grid; grid-template-columns: 3px minmax(0, 1fr); gap: 14px; width: 100%; padding: 13px 14px 13px 0; border: 1px solid var(--code-line); border-radius: 10px; background: rgba(var(--code-cyan-rgb), 0.025); color: var(--code-text); font: inherit; text-align: left; cursor: pointer; overflow: hidden; transition: border-color 0.2s ease, background 0.2s ease; }
+.reus-carte:hover { border-color: rgba(var(--code-cyan-rgb), 0.5); background: rgba(var(--code-cyan-rgb), 0.05); }
+.reus-carte:focus-visible { outline: 2px solid var(--code-cyan); outline-offset: 2px; }
+/* Le filet de gauche dit où elle en est : rapport prêt, à résumer, en cours, en échec. */
+.reus-carte__marque { margin: -13px 0; background: var(--code-line); }
+.reus-carte.is-rangee .reus-carte__marque { background: var(--code-cyan); box-shadow: 0 0 12px var(--code-cyan); }
+.reus-carte--prete:not(.is-rangee) .reus-carte__marque { background: var(--code-amber); }
+.reus-carte--enregistrement .reus-carte__marque { background: #ff5a5a; box-shadow: 0 0 12px #ff5a5a; animation: reub-pouls 1.6s ease-in-out infinite; }
+.reus-carte--transcription .reus-carte__marque { background: rgba(var(--code-cyan-rgb), 0.5); }
+.reus-carte--erreur .reus-carte__marque { background: var(--code-red-line); }
+.reus-carte__corps { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.reus-carte__tete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.reus-carte__tete strong { font: 600 16px / 1.25 var(--code-display); letter-spacing: 0.03em; overflow-wrap: anywhere; }
+.reus-carte__tete em { flex: none; font-size: 10px; font-style: normal; letter-spacing: 0.12em; color: var(--code-faint); font-variant-numeric: tabular-nums; }
+.reus-carte.is-rangee .reus-carte__tete em, .reus-carte--transcription .reus-carte__tete em { color: var(--code-cyan); }
+.reus-carte--prete:not(.is-rangee) .reus-carte__tete em { color: var(--code-amber-text); }
+.reus-carte--enregistrement .reus-carte__tete em { color: #ff8a8a; }
+.reus-carte--erreur .reus-carte__tete em { color: var(--code-red-text); }
+.reus-carte__corps > small { font-size: 10.5px; letter-spacing: 0.1em; color: var(--code-faint); }
+.reus-carte__resume { font-size: 13.5px; line-height: 1.45; color: var(--code-text-2); }
+.reus-carte__resume--erreur { color: var(--code-red-text); }
+
+@container reunion (max-width: 620px) {
+  .reu-deux { grid-template-columns: minmax(0, 1fr); }
+  .reu-personne { grid-template-columns: minmax(0, 1fr); }
+  .reu-chiffres { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .reu-chiffres > div:nth-child(3) { border-left: none; }
+  .reu-chiffres > div:nth-child(n + 3) { border-top: 1px solid var(--code-line); }
+  .reu-passages li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .reu-passages time { padding-top: 0; }
+  .reu-recherche { flex: 1 1 100%; }
+  .reus-carte__tete { flex-direction: column; gap: 4px; }
+}
+
+/* ── Le bandeau d'enregistrement ── */
+/* Posé en haut de l'écran, au-dessus de tout : on ne peut pas oublier qu'on enregistre. */
+.reub-ancre { position: fixed; z-index: 60; top: calc(env(safe-area-inset-top, 0px) + var(--reub-haut, 72px)); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 24px); pointer-events: none; }
+.reub-ancre > * { pointer-events: auto; }
+.reub {
+  --reub-rouge: #ff5a5a;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(560px, calc(100vw - 24px));
+  padding: 9px 10px 9px 14px;
+  border: 1px solid var(--code-line);
+  border-radius: 999px;
+  background: var(--code-panel);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--code-text);
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
+  animation: today-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.reub--enregistrement { border-color: color-mix(in srgb, var(--reub-rouge) 55%, transparent); }
+.reub--erreur { border-color: var(--code-red-line); border-radius: 16px; }
+.reub-point { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--code-cyan); box-shadow: 0 0 10px var(--code-cyan); animation: reub-pouls 1.6s ease-in-out infinite; }
+.reub--enregistrement .reub-point { background: var(--reub-rouge); box-shadow: 0 0 12px var(--reub-rouge); }
+@keyframes reub-pouls { 50% { opacity: 0.35; } }
+.reub-texte { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.reub-texte strong { font: 600 14px / 1.2 var(--code-display); letter-spacing: 0.04em; white-space: nowrap; }
+.reub-texte small { font-size: 11.5px; line-height: 1.3; color: var(--code-muted); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.reub-rec { color: var(--reub-rouge); letter-spacing: 0.16em; font-size: 11px; }
+.reub-texte time { font-size: 15px; font-variant-numeric: tabular-nums; }
+.reub-niveau { flex: none; display: inline-flex; align-items: center; gap: 3px; height: 22px; }
+.reub-niveau i { width: 3px; height: 100%; border-radius: 2px; background: var(--reub-rouge); transform: scaleY(0.18); transform-origin: center; }
+.reub-bouton { flex: none; min-height: 34px; padding: 0 14px; border: 1px solid var(--code-line); border-radius: 999px; background: transparent; color: var(--code-text-2); font: 500 13px var(--code-sans); cursor: pointer; }
+.reub-bouton:hover { border-color: var(--code-cyan); color: var(--code-cyan); }
+.reub-bouton--fin { border-color: var(--reub-rouge); background: var(--reub-rouge); color: #1a0606; font-weight: 600; }
+.reub-bouton--fin:hover { border-color: #fff; color: #1a0606; filter: brightness(1.1); }
+.reub-bouton--alerte { border-color: var(--code-red-line); color: var(--code-red-text); }
+.reub-fermer { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border: none; border-radius: 50%; background: transparent; color: var(--code-faint); cursor: pointer; }
+.reub-fermer:hover { color: var(--code-text); background: rgba(var(--code-cyan-rgb), 0.08); }
+.reub-bouton:focus-visible, .reub-fermer:focus-visible { outline: 2px solid var(--code-cyan); outline-offset: 2px; }
+@media (max-width: 480px) {
+  .reub { gap: 8px; padding: 8px 6px 8px 12px; border-radius: 18px; width: calc(100vw - 24px); }
+  .reub-texte small { -webkit-line-clamp: 1; }
+  .reub-bouton { padding: 0 12px; }
+  .reub-fermer { width: 28px; }
+  .reub-niveau { gap: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reu-bloc li, .reu-personne, .reu-passages li, .reus-liste > li, .reub, .reub-point, .reus-carte__marque { animation: none; }
+  .reu-jauge i { transition: none; }
+}
+
+/* La proposition de l'agenda : le même bandeau, à l'ambre (une question, pas encore un enregistrement). */
+.reub--proposition { border-color: var(--code-amber-line); }
+.reub--proposition .reub-point { background: var(--code-amber); box-shadow: 0 0 12px var(--code-amber); }
+.reub--proposition .reub-texte strong { white-space: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+
+/* En pause : l'enregistrement attend, rien n'est capté. */
+.reub--pause { border-color: var(--code-amber-line); }
+.reub--pause .reub-point { background: var(--code-amber); box-shadow: 0 0 12px var(--code-amber); animation: none; }
+.reub--pause .reub-rec { color: var(--code-amber); }
+.reub-pause { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--code-line); border-radius: 50%; background: transparent; color: var(--code-text-2); cursor: pointer; }
+.reub-pause:hover { border-color: var(--code-cyan); color: var(--code-cyan); }
+.reub-pause:focus-visible { outline: 2px solid var(--code-cyan); outline-offset: 2px; }

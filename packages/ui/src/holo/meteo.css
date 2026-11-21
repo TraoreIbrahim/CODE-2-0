@@ -1,0 +1,186 @@
+/* ── Météo : une carte, le ciel qui vit ── */
+
+.meteo {
+  --sun: #ffc65c;
+  --cloud: #c9d8e2;
+  --rain: #6fc3ff;
+  --bolt: #ffd84d;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  color: var(--code-text);
+}
+
+.meteo__now {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 22px;
+}
+.meteo__icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 136px;
+  height: 136px;
+}
+/* Un halo derrière l'icône, chaud au soleil, froid sous la pluie. */
+.meteo__icon::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 198, 92, 0.22), transparent 70%);
+  filter: blur(6px);
+}
+.meteo--pluie .meteo__icon::before,
+.meteo--orage .meteo__icon::before { background: radial-gradient(circle, rgba(111, 195, 255, 0.22), transparent 70%); }
+.meteo--nuages .meteo__icon::before,
+.meteo--brouillard .meteo__icon::before,
+.meteo--nuit .meteo__icon::before { background: radial-gradient(circle, rgba(201, 216, 226, 0.14), transparent 70%); }
+
+.meteo__lieu { margin: 0; font-size: 11px; letter-spacing: 0.3em; color: var(--code-cyan); }
+.meteo__temp {
+  margin: 2px 0 0;
+  font: 600 76px/0.95 var(--code-display);
+  letter-spacing: -0.02em;
+  color: var(--code-text);
+  text-shadow: 0 0 30px rgba(var(--code-cyan-rgb), 0.25);
+}
+.meteo__temp span { margin-left: 4px; font-size: 26px; vertical-align: 38px; color: var(--code-muted); }
+.meteo__sky { margin: 8px 0 0; font: 500 17px var(--code-sans); color: var(--code-text-2); }
+
+.meteo__facts { display: grid; grid-template-columns: repeat(2, minmax(110px, auto)); gap: 14px 26px; margin: 0; }
+.meteo__facts div { padding-left: 12px; border-left: 1px solid rgba(var(--code-cyan-rgb), 0.3); }
+.meteo__facts dt { font: 500 9.5px var(--code-mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--code-faint); }
+.meteo__facts dd { margin: 4px 0 0; font: 600 16px var(--code-display); color: var(--code-text); }
+
+/* Les prochaines heures : un ruban qui défile. */
+.meteo__hours {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 12px 4px;
+  list-style: none;
+  overflow-x: auto;
+  border-top: 1px solid rgba(var(--code-cyan-rgb), 0.15);
+  border-bottom: 1px solid rgba(var(--code-cyan-rgb), 0.15);
+  scrollbar-width: thin;
+}
+.meteo__hours li {
+  flex: 1 0 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  border-radius: 6px;
+  animation: meteo-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 35ms + 150ms);
+}
+.meteo__hours li.is-rain { background: linear-gradient(180deg, transparent, rgba(111, 195, 255, 0.1)); }
+.meteo__h { font-size: 10.5px; color: var(--code-muted); }
+.meteo__hours b { font: 600 15px var(--code-display); }
+.meteo__mm { min-height: 1em; font-size: 9.5px; color: var(--rain); }
+
+/* Les jours : la barre montre où se situe la journée entre le plus frais et le plus chaud de la semaine. */
+.meteo__days { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.meteo__days li {
+  display: grid;
+  grid-template-columns: 112px 34px minmax(0, 1fr) 36px minmax(80px, 1.2fr) 36px 52px;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 4px;
+  border-bottom: 1px solid rgba(var(--code-cyan-rgb), 0.07);
+  animation: meteo-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 60ms + 300ms);
+}
+.meteo__day { font: 500 14px var(--code-sans); color: var(--code-text); }
+.meteo__daysky { font-size: 12.5px; color: var(--code-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meteo__min { text-align: right; font-size: 13px; color: var(--code-muted); }
+.meteo__max { font-size: 13px; color: var(--code-text); }
+.meteo__bar { position: relative; height: 5px; border-radius: 3px; background: rgba(var(--code-cyan-rgb), 0.08); }
+.meteo__bar i { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, #6fc3ff, #ffc65c 70%, #ff8a5c); }
+.meteo__days .meteo__mm { text-align: right; }
+.meteo__src { margin: 0; font-size: 9.5px; letter-spacing: 0.18em; color: var(--code-faint); }
+
+@keyframes meteo-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* ── Icônes du ciel ── */
+.sky { overflow: visible; }
+.sky__sun circle { fill: var(--sun, var(--code-encre-ambre, #ffc65c)); }
+.sky__sun line { stroke: var(--sun, var(--code-encre-ambre, #ffc65c)); stroke-width: 2.4; stroke-linecap: round; }
+.sky__sun { transform-origin: 26px 22px; animation: sky-spin 24s linear infinite; }
+.sky--soleil .sky__sun { filter: drop-shadow(0 0 6px rgba(255, 198, 92, 0.6)); }
+.sky__moon { fill: var(--code-encre, #e7eef7); filter: drop-shadow(0 0 5px rgba(231, 238, 247, 0.45)); }
+.sky__cloud { fill: var(--cloud, var(--code-encre, #c9d8e2)); animation: sky-drift 7s ease-in-out infinite alternate; }
+.sky__cloud--back { fill: #7f97a6; animation-duration: 9s; animation-direction: alternate-reverse; }
+.sky--pluie .sky__cloud,
+.sky--orage .sky__cloud { fill: var(--code-encre, #9fb3c1); }
+.sky__drop { stroke: var(--rain, var(--code-encre, #6fc3ff)); stroke-width: 2.4; stroke-linecap: round; animation: sky-rain 1.1s linear infinite; animation-delay: calc(var(--i) * 0.35s); }
+.sky__bolt { fill: var(--bolt, var(--code-encre-ambre, #ffd84d)); filter: drop-shadow(0 0 4px rgba(255, 216, 77, 0.8)); animation: sky-flash 3.2s ease-in-out infinite; }
+.sky__fog line { stroke: var(--code-encre, #c9d8e2); stroke-width: 3; stroke-linecap: round; opacity: 0.7; animation: sky-drift 6s ease-in-out infinite alternate; }
+.sky__flake { fill: #fff; animation: sky-rain 2.4s linear infinite; animation-delay: calc(var(--i) * 0.7s); }
+
+@keyframes sky-spin { to { transform: rotate(360deg); } }
+@keyframes sky-drift { from { transform: translateX(-1.5px); } to { transform: translateX(2px); } }
+@keyframes sky-rain { from { transform: translateY(-4px); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(7px); opacity: 0; } }
+@keyframes sky-flash { 0%, 70%, 100% { opacity: 1; } 75%, 85% { opacity: 0.25; } 80% { opacity: 1; } }
+
+/* ── Résultats d'une recherche web ── */
+.web-res { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.web-res li { animation: meteo-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i) * 45ms); }
+.web-res__item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  align-items: start;
+  gap: 14px;
+  padding: 12px 10px;
+  border: none;
+  border-bottom: 1px solid rgba(var(--code-cyan-rgb), 0.08);
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.web-res__item:hover { background: rgba(var(--code-cyan-rgb), 0.05); }
+.web-res__item:hover .web-res__go { opacity: 1; transform: none; }
+.web-res__mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(var(--code-cyan-rgb), 0.3);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--code-cyan);
+  background: rgba(var(--code-cyan-rgb), 0.06);
+}
+.web-res__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.web-res__site { font-size: 10.5px; letter-spacing: 0.08em; color: var(--code-muted); }
+.web-res__site em { font-style: normal; color: var(--code-faint); }
+.web-res__title { font: 600 15px/1.35 var(--code-sans); color: var(--code-text); }
+.web-res__resume { font-size: 13px; line-height: 1.5; color: var(--code-text-2); }
+.web-res__go { align-self: center; font: 600 10px var(--code-mono); letter-spacing: 0.18em; color: var(--code-cyan); opacity: 0; transform: translateX(-4px); transition: opacity 0.2s, transform 0.2s; }
+
+@container holo-scene (max-width: 720px) {
+  .meteo__now { grid-template-columns: auto 1fr; gap: 12px; }
+  .meteo__icon { width: 96px; height: 96px; }
+  .meteo__icon svg { width: 84px; height: 84px; }
+  .meteo__temp { font-size: 58px; }
+  .meteo__temp span { vertical-align: 28px; font-size: 20px; }
+  .meteo__facts { grid-column: 1 / -1; grid-template-columns: repeat(4, auto); gap: 10px 14px; }
+  .meteo__facts { gap: 10px; }
+  .meteo__facts div { padding-left: 8px; }
+  .meteo__facts dd { font-size: 13.5px; white-space: nowrap; }
+  .meteo__days li { grid-template-columns: 64px 26px 26px minmax(36px, 1fr) 28px 50px; gap: 7px; padding-right: 0; }
+  .meteo__day { font-size: 13px; }
+  .meteo__days .meteo__mm { white-space: nowrap; }
+  .meteo__daysky { display: none; }
+  .web-res__go { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sky__sun, .sky__cloud, .sky__drop, .sky__bolt, .sky__fog line, .sky__flake,
+  .meteo__hours li, .meteo__days li, .web-res li { animation: none; }
+}

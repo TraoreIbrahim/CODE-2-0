@@ -1,0 +1,198 @@
+/* Papiers : la feuille photographiée (balayée pendant la lecture, tamponnée une fois rangée) et sa fiche. */
+
+.pap-cat--facture { --pap: var(--code-cyan); }
+.pap-cat--impot { --pap: var(--code-amber); }
+.pap-cat--assurance { --pap: var(--code-green); }
+.pap-cat--logement { --pap: #b18cff; }
+.pap-cat--banque { --pap: #7fb2ff; }
+.pap-cat--sante { --pap: #5fe3c8; }
+.pap-cat--identite { --pap: #ff8fc8; }
+.pap-cat--vehicule { --pap: #ffd166; }
+.pap-cat--travail { --pap: #9aa8ff; }
+.pap-cat--scolarite { --pap: #ffa58a; }
+.pap-cat--autre { --pap: var(--code-grey); }
+
+.pap {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 22px;
+  align-items: start;
+}
+
+/* ── La feuille ── */
+.pap-feuille {
+  position: relative;
+  margin: 6px 4px 10px;
+  aspect-ratio: 3 / 4;
+  max-height: 440px;
+  background: rgba(var(--code-ombre, 4, 12, 18), 0.5);
+  border: 1px solid var(--code-line);
+  transform: rotate(-1.2deg);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  animation: pap-pose 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes pap-pose {
+  from { opacity: 0; transform: rotate(-4deg) translateY(16px) scale(0.97); }
+}
+.pap-feuille img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+.pap-feuille__coin {
+  position: absolute;
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  border-color: var(--pap, var(--code-cyan));
+  border-style: solid;
+  pointer-events: none;
+}
+.pap-feuille__coin--hg { top: 6px; left: 6px; border-width: 1.5px 0 0 1.5px; }
+.pap-feuille__coin--bd { bottom: 6px; right: 6px; border-width: 0 1.5px 1.5px 0; }
+.pap-feuille__pdf {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: repeating-linear-gradient(180deg, transparent 0 22px, rgba(var(--code-cyan-rgb), 0.05) 22px 23px);
+}
+.pap-feuille__pdf strong { font: 600 34px var(--code-display); letter-spacing: 0.08em; color: var(--pap, var(--code-cyan)); }
+.pap-feuille__pdf small { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 11px var(--code-mono); color: var(--code-faint); }
+
+/* Lecture : le faisceau descend et remonte sur la feuille, qui reste un peu voilée. */
+.pap-feuille.is-lecture img { filter: saturate(0.6) brightness(0.85); }
+.pap-feuille__faisceau {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  top: -70px;
+  height: 70px;
+  background: linear-gradient(180deg, transparent, rgba(var(--code-cyan-rgb), 0.18) 85%, rgba(var(--code-cyan-rgb), 0.9) 98%, transparent);
+  box-shadow: 0 10px 22px -10px var(--code-cyan);
+  mix-blend-mode: screen;
+  animation: pap-faisceau 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+@keyframes pap-faisceau {
+  to { top: calc(100% - 10px); }
+}
+
+/* Rangé : le tampon, à la couleur du classement, s'imprime en coin. */
+.pap-tampon {
+  position: absolute;
+  z-index: 3;
+  right: 12px;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px 7px;
+  border: 2px solid var(--pap);
+  outline: 1px solid var(--pap);
+  outline-offset: 2px;
+  color: var(--pap);
+  background: rgba(var(--code-ombre, 2, 6, 10), 0.72);
+  transform: rotate(-9deg);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--pap) 50%, transparent);
+  animation: pap-tampon 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) 0.35s both;
+}
+.pap-tampon strong { font: 700 20px var(--code-display); letter-spacing: 0.22em; line-height: 1; }
+.pap-tampon small { font: 600 9px var(--code-mono); letter-spacing: 0.2em; }
+@keyframes pap-tampon {
+  from { opacity: 0; transform: rotate(-16deg) scale(1.8); }
+  60% { opacity: 1; }
+}
+
+/* ── La fiche ── */
+.pap-fiche { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.pap-fiche .perso-fil__subject { margin: 2px 0 0; }
+.pap-fiche__emetteur { margin: 0; font: 500 13px var(--code-mono); letter-spacing: 0.04em; color: var(--pap, var(--code-cyan)); }
+.pap-fiche__resume { margin: 2px 0 0; color: var(--code-text-2); line-height: 1.5; }
+.pap-champs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  margin: 6px 0 0;
+  border-top: 1px solid var(--code-line);
+  border-left: 1px solid var(--code-line);
+}
+.pap-champs > div {
+  min-width: 0;
+  padding: 8px 10px 9px;
+  border-right: 1px solid var(--code-line);
+  border-bottom: 1px solid var(--code-line);
+  background: rgba(var(--code-ombre, 4, 12, 18), 0.5);
+  animation: today-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms + 0.25s);
+}
+.pap-champs dt { font: 500 9.5px var(--code-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--code-faint); }
+.pap-champs dd { margin: 3px 0 0; font-size: 14px; color: var(--code-text); overflow-wrap: anywhere; }
+
+.pap-fiche__lecture { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.pap-fiche__lecture span { font: 500 11px var(--code-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--code-cyan); }
+.pap-fiche__lecture i {
+  display: block;
+  height: 10px;
+  background: linear-gradient(90deg, rgba(var(--code-cyan-rgb), 0.06), rgba(var(--code-cyan-rgb), 0.18), rgba(var(--code-cyan-rgb), 0.06));
+  background-size: 200% 100%;
+  animation: pap-ligne 1.4s linear infinite;
+}
+.pap-fiche__lecture i:nth-of-type(2) { width: 82%; }
+.pap-fiche__lecture i:nth-of-type(3) { width: 58%; }
+@keyframes pap-ligne { to { background-position: -200% 0; } }
+
+/* Ce qui a été fait : rangé où, échéance notée. */
+.pap-suites { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pap-suites li {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px 7px 10px;
+  border-left: 2px solid var(--pap, var(--code-cyan));
+  background: rgba(var(--code-cyan-rgb), 0.04);
+  animation: today-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 0.6s);
+}
+.pap-suites__quoi { font: 600 10px var(--code-mono); letter-spacing: 0.14em; color: var(--code-faint); }
+.pap-suites__texte { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--code-text); }
+.pap-suites .holo-action { height: 30px; padding: 0 10px; font-size: 11px; display: inline-flex; align-items: center; text-decoration: none; }
+.pap-fiche__original { align-self: flex-start; margin-top: 4px; font: 500 11px var(--code-mono); letter-spacing: 0.06em; color: var(--code-faint); text-decoration: none; }
+.pap-fiche__original:hover { color: var(--code-cyan); }
+
+/* ── Plusieurs papiers ── */
+.paps header { margin-bottom: 12px; }
+.paps__vide { margin: 0; color: var(--code-muted); }
+.paps__grille { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.paps__grille > li { min-width: 0; animation: today-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 50ms); }
+.paps__carte { width: 100%; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.paps__carte .pap-feuille { margin: 0 0 8px; max-height: none; transform: none; animation: none; box-shadow: none; transition: border-color 0.2s ease, transform 0.2s ease; }
+.paps__carte:hover .pap-feuille,
+.paps__carte:focus-visible .pap-feuille { border-color: var(--pap); transform: translateY(-2px); }
+.paps__carte:focus-visible { outline: none; }
+.paps__carte .pap-tampon { right: 6px; bottom: 10px; padding: 3px 7px 4px; animation: none; }
+.paps__carte .pap-tampon strong { font-size: 12px; }
+.paps__carte .pap-tampon small { font-size: 7px; }
+.paps__texte { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.paps__texte strong { font-size: 13.5px; font-weight: 500; color: var(--code-text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.paps__texte small { font-size: 11.5px; color: var(--code-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.paps__texte em { font: normal 500 9.5px var(--code-mono); letter-spacing: 0.12em; color: var(--code-amber-text); }
+
+@container holo-scene (max-width: 640px) {
+  .pap { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .pap > .pap-feuille { max-height: 300px; aspect-ratio: auto; height: 300px; }
+  .pap-suites li { grid-template-columns: minmax(0, 1fr) auto; }
+  .pap-suites__quoi { grid-column: 1 / -1; }
+  .paps__grille { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pap-feuille, .pap-tampon, .pap-feuille__faisceau, .pap-fiche__lecture i { animation: none; }
+}

@@ -1,0 +1,200 @@
+/* Contacts : la fiche d'une personne, ou des cartes pour choisir. */
+
+.contacts__vide {
+  margin: 0;
+  color: var(--code-muted);
+}
+.contacts__tete {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.contacts__qui {
+  min-width: 0;
+  flex: 1;
+}
+.contacts__qui h3 {
+  margin: 0;
+  font: 500 26px/1.15 var(--code-display);
+  letter-spacing: 0.02em;
+  color: var(--code-text);
+}
+.contacts__qui p {
+  margin: 4px 0 0;
+  color: var(--code-muted);
+}
+.contacts__coord {
+  margin: 0;
+  display: grid;
+  gap: 1px;
+  border: 1px solid var(--code-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--code-line);
+}
+.contacts__ligne {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 16px;
+  background: rgba(var(--code-ombre, 4, 10, 16), 0.92);
+}
+.contacts__ligne dt {
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: var(--code-faint);
+}
+.contacts__ligne dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--code-text);
+}
+.contacts__ligne a {
+  color: var(--code-cyan);
+  text-decoration: none;
+}
+.contacts__ligne a:hover,
+.contacts__ligne a:focus-visible {
+  text-decoration: underline;
+}
+.contacts__liens {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.contacts__liens h4 {
+  margin: 0 0 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: var(--code-faint);
+}
+.contacts__liens ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.contacts__liens li,
+.contacts__liens button {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--code-line);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--code-text-2);
+  font: inherit;
+  text-align: left;
+}
+.contacts__liens li:has(button) {
+  padding: 0;
+  border: none;
+}
+.contacts__liens button {
+  cursor: pointer;
+}
+.contacts__liens button:hover,
+.contacts__liens button:focus-visible {
+  border-color: rgba(var(--code-cyan-rgb), 0.5);
+}
+.contacts__liens button.is-nonlu span {
+  font-weight: 600;
+  color: var(--code-text);
+}
+.contacts__liens span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.contacts__liens small {
+  flex: none;
+  font-size: 11px;
+  color: var(--code-faint);
+}
+.contacts__compte {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--code-faint);
+}
+.contacts__grille {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+.contacts__grille li {
+  animation: perso-in 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.contacts__carte {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--code-line);
+  border-radius: 14px;
+  background: rgba(var(--code-ombre, 4, 10, 16), 0.6);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms;
+}
+.contacts__carte:hover,
+.contacts__carte:focus-visible {
+  border-color: rgba(var(--code-cyan-rgb), 0.55);
+}
+.contacts__carte-texte {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.contacts__carte-texte .perso-tag {
+  align-self: flex-start;
+  width: fit-content;
+  margin-top: 4px;
+}
+.contacts__carte-texte strong,
+.contacts__carte-texte small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.contacts__carte-texte strong {
+  font: 600 14px var(--code-sans);
+  color: var(--code-text);
+}
+.contacts__carte-texte small {
+  font-size: 12px;
+  color: var(--code-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@container perso (max-width: 420px) {
+  .contacts__ligne {
+    grid-template-columns: 92px minmax(0, 1fr);
+    padding: 10px 12px;
+  }
+  .contacts__qui h3 {
+    font-size: 22px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contacts__grille li {
+    animation: none;
+  }
+}

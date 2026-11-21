@@ -1,0 +1,88 @@
+/* Cartes, fiches et indicateurs — dans la lumière des panneaux holographiques. */
+
+.holo-panel--wide {
+  width: min(100%, 1180px);
+  max-height: min(86vh, 920px);
+}
+
+.holo-counter--text .holo-counter__value {
+  font-size: 22px;
+  line-height: 1.2;
+}
+@keyframes holo-breathe {
+  50% { opacity: 0.35; }
+}
+.map-ping {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  border-radius: 50%;
+}
+.map-ping { width: 12px; height: 12px; border: 2px solid var(--code-green); animation: map-ping-out 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+@keyframes map-ping-out {
+  to { width: 64px; height: 64px; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-ping { animation: none; }
+}
+
+/* ── Rechargement d'une page : le contenu reste, atténué ── */
+
+.holo-body--refresh > * { opacity: 0.45; filter: saturate(0.6); transition: opacity 0.2s; pointer-events: none; }
+.holo-body--refresh { position: relative; }
+.holo-body--refresh::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--code-cyan), transparent);
+  animation: holo-loading 1s linear infinite;
+}
+@keyframes holo-loading {
+  from { transform: translateX(-60%); }
+  to { transform: translateX(60%); }
+}
+
+/* ── Pagination ── */
+
+.holo-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--code-line-soft);
+}
+.holo-pager__count { font: 500 12px var(--code-mono); color: var(--code-text-2); font-variant-numeric: tabular-nums; }
+.holo-pager__count span { color: var(--code-muted); }
+.holo-pager__pages { display: flex; align-items: center; gap: 4px; }
+.holo-pager__btn {
+  min-width: 34px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--code-line);
+  border-radius: 4px;
+  background: rgba(var(--code-ombre, 4, 12, 18), 0.6);
+  color: var(--code-text-2);
+  font: 500 12px var(--code-mono);
+  cursor: pointer;
+}
+.holo-pager__btn:hover:not(:disabled) { border-color: var(--holo-line); color: var(--code-text); }
+.holo-pager__btn:focus-visible { outline: 2px solid var(--code-cyan); outline-offset: 1px; }
+.holo-pager__btn:disabled { opacity: 0.35; cursor: default; }
+.holo-pager__btn.is-current { border-color: var(--code-cyan); background: var(--code-cyan-soft); color: var(--code-cyan); box-shadow: 0 0 12px var(--holo-glow); }
+.holo-pager__gap { padding: 0 4px; color: var(--code-faint); font: 500 12px var(--code-mono); }
+
+/* ── Panneau étroit (cockpit avec l'orbe, mobile) : on suit la largeur du panneau, pas celle de l'écran ── */
+
+.holo-panel--wide .holo-body { container: fiche / inline-size; }
+
+@container fiche (max-width: 640px) {
+  .holo-pager { justify-content: center; }
+}

@@ -1,0 +1,112 @@
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+/* ── Itinéraire : la durée en grand, le trajet qui s'allume, la navigation dans Google Maps ── */
+
+.route { display: flex; flex-direction: column; gap: 14px; color: var(--code-text); }
+.route__head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 20px; }
+.route__time { display: flex; align-items: baseline; gap: 6px; padding-right: 20px; border-right: 1px solid rgba(var(--code-cyan-rgb), 0.25); }
+.route__time b { font: 600 56px/0.9 var(--code-display); letter-spacing: -0.02em; color: var(--code-text); text-shadow: 0 0 28px rgba(var(--code-cyan-rgb), 0.35); }
+.route__time span { font: 500 16px var(--code-mono); color: var(--code-muted); }
+.route__icon { color: var(--code-cyan); filter: drop-shadow(0 0 10px rgba(var(--code-cyan-rgb), 0.5)); }
+.route__what { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.route__meta { margin: 0; font-size: 11px; letter-spacing: 0.18em; color: var(--code-cyan); }
+.route__meta em { font-style: normal; color: var(--code-faint); }
+.route__dest { display: flex; align-items: center; gap: 10px; margin: 0; min-width: 0; }
+.route__dest strong { font: 600 19px var(--code-display); letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.route__code { flex: none; padding: 2px 8px; border: 1px solid rgba(255, 179, 71, 0.6); color: var(--code-encre-rouge, #ffb347); font-size: 12px; letter-spacing: 0.06em; background: rgba(255, 179, 71, 0.08); }
+.route__addr { margin: 0; font-size: 13px; color: var(--code-muted); }
+.route__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border: 1px solid rgba(var(--code-cyan-rgb), 0.7);
+  background: linear-gradient(180deg, rgba(var(--code-cyan-rgb), 0.28), rgba(var(--code-cyan-rgb), 0.12));
+  color: var(--code-text);
+  font: 600 13px var(--code-sans);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 0 22px rgba(var(--code-cyan-rgb), 0.22);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.route__go:hover { box-shadow: 0 0 32px rgba(var(--code-cyan-rgb), 0.45); transform: translateY(-1px); }
+.route__note { margin: 0; font-size: 13px; color: var(--code-encre-rouge, #ffb347); }
+.route__hint { margin: 0; font: 400 11px var(--code-mono); letter-spacing: 0.04em; color: var(--code-faint); }
+
+/* La carte (MapLibre) : un grand cadre, le trajet en lumière, « VOUS » et l'épingle du site. */
+.route-map {
+  position: relative;
+  height: clamp(340px, 52vh, 560px);
+  overflow: hidden;
+  border: 1px solid var(--holo-line, rgba(var(--code-cyan-rgb), 0.3));
+  background: var(--code-filet-x, #061118);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(var(--code-cyan-rgb), 0.12);
+}
+.route-map__canvas { position: absolute; inset: 0; }
+.route-map__off { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0; padding: 10px 14px; background: rgba(var(--code-ombre, 6, 17, 24), 0.9); color: var(--code-muted); font-size: 13px; text-align: center; }
+.route-map__off--wait { color: var(--code-cyan); letter-spacing: 0.04em; animation: route-wait 1.6s ease-in-out infinite; }
+@keyframes route-wait { 50% { opacity: 0.45; } }
+
+/* Outils : recentrer, plein écran (le zoom + / − est celui de MapLibre, à gauche). */
+.route-map__tools { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; gap: 6px; }
+.route-map__tools button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(var(--code-cyan-rgb), 0.45);
+  background: rgba(var(--code-ombre, 3, 12, 18), 0.88);
+  color: var(--code-text);
+  cursor: pointer;
+}
+.route-map__tools button:hover { border-color: var(--code-cyan); color: var(--code-cyan); }
+
+/* Contrôles de MapLibre au thème de CODE. */
+.route-map .maplibregl-ctrl-group { border-radius: 0; background: rgba(var(--code-ombre, 3, 12, 18), 0.88); box-shadow: none; border: 1px solid rgba(var(--code-cyan-rgb), 0.45); }
+.route-map .maplibregl-ctrl-group button { width: 32px; height: 32px; }
+.route-map .maplibregl-ctrl-group button + button { border-top: 1px solid rgba(var(--code-cyan-rgb), 0.25); }
+.route-map .maplibregl-ctrl-icon { filter: invert(1) brightness(1.4); }
+.route-map .maplibregl-ctrl-attrib { background: rgba(var(--code-ombre, 3, 12, 18), 0.75); color: var(--code-faint); font-size: 10px; }
+.route-map .maplibregl-ctrl-attrib a { color: var(--code-muted); }
+.route-map .maplibregl-ctrl-attrib-button { filter: invert(1); }
+
+/* Repères (positionnés par MapLibre : pas de transformation sur l'élément lui-même). */
+.route-map__from { position: relative; width: 20px; height: 20px; display: grid; place-items: center; }
+.route-map__me { position: relative; z-index: 1; display: block; width: 14px; height: 14px; border: 3px solid #fff; border-radius: 50%; background: var(--code-cyan); box-shadow: 0 0 14px var(--code-cyan); }
+.route-map__from .map-ping { position: absolute; left: 50%; top: 50%; }
+.route-map__to { position: relative; width: 30px; height: 40px; }
+.route-map__pin { display: block; filter: drop-shadow(0 4px 10px rgba(255, 140, 50, 0.6)); animation: route-drop 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) 0.4s both; }
+@keyframes route-drop { from { opacity: 0; transform: translateY(-40px); } }
+.route-map__pin path { fill: var(--code-encre-rouge, #ff9a3c); stroke: #fff3e0; stroke-width: 1.5; }
+.route-map__pin circle { fill: #2a1400; }
+.route-map__tag { position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%); padding: 2px 8px; background: #ff9a3c; color: #1d0c00; font: 700 11px var(--code-mono); letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; }
+.route-map__tag--me { bottom: auto; top: calc(100% + 6px); background: rgba(var(--code-ombre, 4, 12, 18), 0.9); color: var(--code-cyan); border: 1px solid rgba(var(--code-cyan-rgb), 0.5); }
+
+/* Plein écran : la carte sur toute la fenêtre, au-dessus de tout (hors du panneau incliné). */
+.route-full { position: fixed; inset: 0; z-index: 400; display: flex; flex-direction: column; background: var(--code-fond-x, #03090d); animation: route-full-in 0.25s ease both; }
+@keyframes route-full-in { from { opacity: 0; } }
+.route-full__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: max(14px, env(safe-area-inset-top)) 18px 14px; padding-left: max(18px, env(safe-area-inset-left)); border-bottom: 1px solid rgba(var(--code-cyan-rgb), 0.25); color: var(--code-text); }
+.route-full__title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.route-full__title b { font: 600 26px var(--code-display); color: var(--code-text); }
+.route-full__title strong { font: 600 17px var(--code-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.route-full .route-map { flex: 1; height: auto; border: none; }
+.route-full .route__go { padding: 10px 14px; }
+
+@container holo-scene (max-width: 720px) {
+  .route__head { grid-template-columns: auto minmax(0, 1fr); gap: 14px; }
+  .route__time { padding-right: 14px; }
+  .route__time b { font-size: 44px; }
+  .route__go { grid-column: 1 / -1; justify-content: center; }
+  .route-map { height: 50dvh; }
+  .route-full__bar { flex-wrap: wrap; }
+  .route-full__title b { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-map__pin, .route-full { animation: none; }
+}
+
+/* Panneau à l'arrière-plan : pas de carte (une seule à la fois), un cadre et le code du site. */
+.route-map--idle { display: grid; place-items: center; background: repeating-linear-gradient(0deg, rgba(var(--code-cyan-rgb), 0.05) 0 1px, transparent 1px 28px), repeating-linear-gradient(90deg, rgba(var(--code-cyan-rgb), 0.05) 0 1px, transparent 1px 28px), var(--code-filet-x, #061118); }
+.route-map--idle span { font: 700 14px var(--code-mono); letter-spacing: 0.1em; color: var(--code-encre-rouge, #ff9a3c); }

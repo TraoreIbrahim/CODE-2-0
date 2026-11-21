@@ -1,0 +1,78 @@
+/* Schémas Excalidraw : une feuille blanche posée dans le panneau, le trait qui se dessine élément par élément. */
+
+.schema { display: flex; flex-direction: column; gap: 12px; }
+.schema-tete { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.schema-marque {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  color: #1e1e1e;
+  background: #fff3bf;
+  border: 2px solid var(--code-filet-x, #1e1e1e);
+  border-radius: 10px 14px 9px 13px;
+  transform: rotate(-4deg);
+  box-shadow: 3px 3px 0 rgba(var(--code-cyan-rgb), 0.55);
+}
+.schema-marque svg { width: 22px; height: 22px; }
+.schema-titre { min-width: 0; flex: 1 1 180px; margin: 0; font: 600 21px/1.2 var(--code-display); color: var(--code-text); }
+.schema-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.schema-feuille {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  cursor: zoom-in;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(var(--code-cyan-rgb), 0.35), 0 18px 50px rgba(0, 0, 0, 0.55), 0 0 40px rgba(var(--code-cyan-rgb), 0.12);
+  /* Grain de papier très léger. */
+  background-image: radial-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size: 18px 18px;
+  animation: schema-pose 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes schema-pose {
+  from { opacity: 0; transform: translateY(8px) scale(0.985); }
+}
+.schema-svg { display: block; width: 100%; height: auto; max-height: 62vh; aspect-ratio: 4 / 3; }
+
+/* Le trait se dessine (pathLength = 1), les aplats et les textes apparaissent ensuite. */
+.schema-trait {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: schema-trait 0.55s ease-out forwards;
+  animation-delay: calc(var(--i, 0) * min(45ms, 2.4s / var(--n, 1)));
+}
+@keyframes schema-trait {
+  to { stroke-dashoffset: 0; }
+}
+.schema-fondu {
+  animation: schema-fondu 0.4s ease-out backwards;
+  animation-delay: calc(var(--i, 0) * min(45ms, 2.4s / var(--n, 1)) + 0.25s);
+}
+/* Seulement le départ : l'élément revient ensuite à sa propre opacité (zones translucides). */
+@keyframes schema-fondu {
+  from { opacity: 0; }
+}
+
+.schema-plein {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 48px 32px 32px;
+  background: rgba(var(--code-ombre, 2, 6, 10), 0.86);
+  backdrop-filter: blur(6px);
+  animation: schema-fondu 0.2s ease-out backwards;
+}
+.schema-plein__feuille { width: min(100%, 1600px); max-height: 100%; background: #fff; border-radius: 6px; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6); overflow: auto; }
+.schema-svg--plein { max-height: calc(100vh - 100px); aspect-ratio: auto; }
+.schema-plein__fermer { position: absolute; top: 12px; right: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .schema-trait,
+  .schema-fondu { animation: none; stroke-dashoffset: 0; }
+}

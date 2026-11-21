@@ -1,0 +1,163 @@
+/* Écran de démarrage (Demarrage.tsx) : l'orbe au centre, posé par-dessus l'app le temps de la connexion. */
+.demarrage {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background-color: var(--code-bg);
+  overflow: hidden;
+  transition:
+    opacity 0.55s ease,
+    filter 0.55s ease;
+  /* La barre de titre du Mac reste déplaçable pendant l'attente. */
+  -webkit-app-region: drag;
+}
+
+.demarrage--sortie {
+  opacity: 0;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.demarrage__halo {
+  position: absolute;
+  width: 140vmin;
+  height: 140vmin;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--code-cyan-rgb), 0.14) 0%, rgba(var(--code-cyan-rgb), 0.04) 32%, transparent 62%);
+  animation: demarrage-souffle 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.demarrage__orbe {
+  position: relative;
+  animation: demarrage-entree 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transition: transform 0.55s ease;
+}
+.demarrage--sortie .demarrage__orbe {
+  transform: scale(1.12);
+}
+
+.demarrage__logo {
+  position: relative;
+  animation: demarrage-monte 0.8s 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.demarrage__etat {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  margin: 0;
+  min-height: 1.4em;
+  color: var(--code-muted);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  animation: demarrage-monte 0.8s 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.demarrage__points {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 4px;
+}
+.demarrage__points i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--code-cyan);
+  animation: demarrage-point 1.2s ease-in-out infinite;
+}
+.demarrage__points i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.demarrage__points i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Un trait de lumière qui balaie le bas de l'écran : l'app travaille. */
+.demarrage__barre {
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 48px);
+  width: min(220px, 50vw);
+  height: 2px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background: rgba(var(--code-cyan-rgb), 0.12);
+  overflow: hidden;
+}
+.demarrage__barre::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, var(--code-cyan), transparent);
+  animation: demarrage-balaye 1.6s ease-in-out infinite;
+}
+
+@keyframes demarrage-entree {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes demarrage-monte {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes demarrage-souffle {
+  0%,
+  100% {
+    transform: scale(0.94);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+@keyframes demarrage-point {
+  0%,
+  80%,
+  100% {
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+@keyframes demarrage-balaye {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demarrage__halo,
+  .demarrage__orbe,
+  .demarrage__logo,
+  .demarrage__etat,
+  .demarrage__points i,
+  .demarrage__barre::after {
+    animation: none;
+  }
+}
