@@ -40,7 +40,8 @@ test('Page web : sans script, sans lien, sans chargement extérieur', async () =
   assert.doesNotMatch(safeHtml('<meta http-equiv="refresh" content="0;url=https://x.example"><p>a</p>'), /refresh/)
 })
 
-test('Document Word ou RTF : converti en page (mise en forme gardée)', async () => {
+// La conversion passe par `textutil`, propre à macOS ; ailleurs le document s'affiche en texte.
+test('Document Word ou RTF : converti en page (mise en forme gardée)', { skip: process.platform !== 'darwin' && 'textutil : macOS seulement' }, async () => {
   const v = await documentView(file('note.rtf', '{\\rtf1\\ansi {\\b Note de cadrage}\\par Objet : refonte.}'))
   assert.equal(v.media, 'page')
   assert.match(v.html!, /Note de cadrage/)

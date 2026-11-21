@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict'
+import { existsSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
 import { test } from 'node:test'
 import { confine } from './files.ts'
 
@@ -14,7 +17,8 @@ test('un fichier inexistant est refusé', () => {
   assert.equal(confine('~/Documents/ce-fichier-n-existe-pas-1234.pdf'), null)
 })
 
-test('« Bureau » et « Téléchargements » désignent Desktop et Downloads', () => {
+// Il faut un dossier Desktop (absent d'un serveur Linux, celui de la CI par exemple).
+test('« Bureau » et « Téléchargements » désignent Desktop et Downloads', { skip: !existsSync(join(homedir(), 'Desktop')) && 'pas de dossier Desktop' }, () => {
   const desktop = confine('~/Desktop')
   assert.ok(desktop, 'le Bureau doit être autorisé')
   assert.equal(confine('Bureau'), desktop)
